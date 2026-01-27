@@ -4,13 +4,14 @@ const path = require('path');
 
 class PDFTemplateFiller {
     constructor() {
-        this.templatePath = path.join(__dirname, '..', 'templates', 'admission_template.pdf');
+        const rootDir = process.cwd();
+        this.templatePath = path.join(rootDir, 'backend', 'templates', 'admission_template.pdf');
 
         // Use /tmp for output on Vercel (read-only filesystem elsewhere)
         if (process.env.VERCEL) {
             this.outputPath = path.join('/tmp', 'admission');
         } else {
-            this.outputPath = path.join(__dirname, '..', 'admission');
+            this.outputPath = path.join(rootDir, 'backend', 'admission');
         }
     }
 

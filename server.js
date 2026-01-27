@@ -14,9 +14,10 @@ require('dotenv').config();
 const feeStorage = multer.diskStorage({
   destination: function (req, file, cb) {
     // Use /tmp for uploads on Vercel (read-only filesystem elsewhere)
+    const rootDir = process.cwd();
     const dir = process.env.VERCEL
       ? path.join('/tmp', 'fee')
-      : path.join(__dirname, 'backend', 'fee');
+      : path.join(rootDir, 'backend', 'fee');
 
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
@@ -72,9 +73,10 @@ async function generateStudentPDF(client, campus, admissionNumber) {
     const filename = student.pdf_path || `${student.full_name.replace(/[^a-z0-9]/gi, '_')}.pdf`;
 
     // Choose base path based on environment
+    const rootDir = process.cwd();
     const baseDir = process.env.VERCEL
       ? path.join('/tmp', 'admission')
-      : path.join(__dirname, 'backend', 'admission');
+      : path.join(rootDir, 'backend', 'admission');
 
     const filePath = path.join(baseDir, filename);
 
@@ -1096,6 +1098,40 @@ app.get('/api/:campus/fees', async (req, res) => {
   }
 });
 
+// Debug endpoint to check files on Vercel
+app.get('/api/debug/files', (req, res) => {
+  try {
+    const listFiles = (dir, fileList = []) => {
+      if (!fs.existsSync(dir)) return fileList;
+      const files = fs.readdirSync(dir);
+      files.forEach(file => {
+        const filePath = path.join(dir, file);
+        if (fs.statSync(filePath).isDirectory()) {
+          listFiles(filePath, fileList);
+        } else {
+          fileList.push(filePath);
+        }
+      });
+      return fileList;
+    };
+
+    const rootDir = process.cwd();
+    const backendFeeDir = path.join(rootDir, 'backend', 'fee');
+    const tmpFeeDir = path.join('/tmp', 'fee');
+
+    res.json({
+      success: true,
+      cwd: rootDir,
+      backendFeeDirExists: fs.existsSync(backendFeeDir),
+      backendFeeFiles: listFiles(backendFeeDir).map(f => path.relative(rootDir, f)),
+      tmpFeeDirExists: fs.existsSync(tmpFeeDir),
+      tmpFeeFiles: listFiles(tmpFeeDir).map(f => path.relative('/tmp', f))
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 app.post('/api/:campus/fees/upload', uploadFee.single('feePdf'), (req, res) => {
   try {
     if (!req.file) {
@@ -1121,7 +1157,9 @@ app.get('/api/:campus/fees/download/:filename', (req, res) => {
 
     console.log(`📥 Fee download request - Campus: ${campus}, File: "${decodedFilename}"`);
 
-    const localPath = path.join(__dirname, 'backend', 'fee', decodedFilename);
+    // Use process.cwd() for more reliable paths on Vercel
+    const rootDir = process.cwd();
+    const localPath = path.join(rootDir, 'backend', 'fee', decodedFilename);
     const tmpPath = path.join('/tmp', 'fee', decodedFilename);
 
     let finalPath = null;
