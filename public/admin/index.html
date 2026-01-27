@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - East Africa Vision Institute</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <img src="../assets/logo.webp" alt="East Africa Vision Institute Logo" class="logo-img">
+                    <h3>EAST AFRICA VISION INSTITUTE</h3>
+                </div>
+            </div>
+
+            <div class="sidebar-menu">
+                <a href="index.html" class="menu-item active">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="students.html" class="menu-item">
+                    <i class="fas fa-users"></i>
+                    <span>Students</span>
+                </a>
+
+                <a href="courses.html" class="menu-item">
+                    <i class="fas fa-book"></i>
+                    <span>Courses</span>
+                </a>
+
+                <a href="add-student.html" class="menu-item">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Add Student</span>
+                </a>
+
+                <a href="print-records.html" class="menu-item">
+                    <i class="fas fa-print"></i>
+                    <span>Print Records</span>
+                </a>
+
+                <a href="reporting-dates.html" class="menu-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Reporting Dates</span>
+                </a>
+
+                <a href="settings.html" class="menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+
+                <a href="whatsapp-share.html" class="menu-item">
+                    <i class="fab fa-whatsapp"></i>
+                    <span>WhatsApp Share</span>
+                </a>
+            </div>
+
+            <div class="sidebar-footer">
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="breadcrumb">
+                    <a href="index.html">Dashboard</a>
+                    <span>/</span>
+                    <span>Home</span>
+                </div>
+
+                <div class="user-menu">
+                    <div class="campus-badge" id="campusBadge">West Campus</div>
+                    <div class="user-info">
+                        <div class="user-avatar" id="userAvatar">A</div>
+                        <span id="userName">Admin User</span>
+                    </div>
+                    <button class="mobile-menu-toggle" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dashboard Content -->
+            <div class="dashboard-content">
+                <!-- Statistics Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon total">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalStudents">0</h3>
+                            <p>Total Students</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon admitted">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="admittedStudents">0</h3>
+                            <p>Admitted Students</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Cards -->
+                <div class="dashboard-cards">
+                    <!-- Quick Actions -->
+                    <div class="dashboard-card">
+                        <h3>Quick Actions</h3>
+                        <div class="quick-actions">
+                            <div class="action-btn" onclick="location.href='add-student.html'">
+                                <i class="fas fa-user-plus"></i>
+                                <span>Add Student</span>
+                            </div>
+                            <div class="action-btn" onclick="location.href='print-records.html'">
+                                <i class="fas fa-print"></i>
+                                <span>Print Records</span>
+                            </div>
+                            <div class="action-btn" onclick="location.href='whatsapp-share.html'">
+                                <i class="fab fa-whatsapp"></i>
+                                <span>Share via WhatsApp</span>
+                            </div>
+                            <div class="action-btn" onclick="location.href='reporting-dates.html'">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>Set Reporting Dates</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Students -->
+                    <div class="dashboard-card">
+                        <h3>Recent Applications</h3>
+                        <div class="recent-students">
+                            <div class="student-list" id="recentStudents">
+                                <!-- Recent students will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upcoming Reporting Dates -->
+                <div class="dashboard-card" style="margin-top: 2rem;">
+                    <h3>Upcoming Reporting Dates</h3>
+                    <div class="reporting-dates">
+                        <div class="date-cards">
+                            <div class="date-card">
+                                <div class="date-header">
+                                    <h4>Term 1</h4>
+                                    <span class="date-status active">Current</span>
+                                </div>
+                                <div class="date-info">
+                                    <p><i class="far fa-calendar"></i> Start: <strong>Jan 15, 2024</strong></p>
+                                    <p><i class="far fa-calendar"></i> End: <strong>Apr 15, 2024</strong></p>
+                                    <p><i class="fas fa-users"></i> Students: <strong>45</strong></p>
+                                </div>
+                            </div>
+                            <div class="date-card">
+                                <div class="date-header">
+                                    <h4>Term 2</h4>
+                                    <span class="date-status upcoming">Upcoming</span>
+                                </div>
+                                <div class="date-info">
+                                    <p><i class="far fa-calendar"></i> Start: <strong>May 1, 2024</strong></p>
+                                    <p><i class="far fa-calendar"></i> End: <strong>Aug 1, 2024</strong></p>
+                                    <p><i class="fas fa-users"></i> Expected: <strong>50</strong></p>
+                                </div>
+                            </div>
+                            <div class="date-card">
+                                <div class="date-header">
+                                    <h4>Term 3</h4>
+                                    <span class="date-status upcoming">Upcoming</span>
+                                </div>
+                                <div class="date-info">
+                                    <p><i class="far fa-calendar"></i> Start: <strong>Sep 1, 2024</strong></p>
+                                    <p><i class="far fa-calendar"></i> End: <strong>Dec 1, 2024</strong></p>
+                                    <p><i class="fas fa-users"></i> Expected: <strong>55</strong></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal-overlay" id="studentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Student Details</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="studentDetails">
+                    <!-- Student details will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Application - East Africa Vision Institute</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="navbar">
+                <a href="../index.html" class="logo">
+                    <img src="../assets/logo.webp" alt="East Africa Vision Institute Logo" class="logo-img">
+                    <div class="logo-text">
+                        <h1>EAST AFRICA VISION INSTITUTE</h1>
+                        <p class="tagline">LEADING THE LEADERS</p>
+                    </div>
+                </a>
+                <div class="nav-links">
+                    <a href="../index.html">Home</a>
+                    <a href="/admin">Admin</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Application Form -->
+    <section class="application-section">
+        <div class="container">
+            <div class="application-header">
+                <h2>Admission Application Form</h2>
+                <p>Fill in your details to apply for admission. Fields marked with * are required.</p>
+            </div>
+
+            <div class="application-container">
+                <div class="lookup-section">
+                    <div class="lookup-card">
+                        <h4>Already Applied? Check Your Admission</h4>
+                        <div class="lookup-form">
+                            <div class="lookup-group">
+                                <label for="lookupPhone">Enter Phone Number</label>
+                                <input type="tel" id="lookupPhone" placeholder="e.g. 0712345678">
+                            </div>
+                            <div class="lookup-group">
+                                <label>Campus</label>
+                                <select id="lookupCampus">
+                                    <option value="west">West Campus</option>
+                                    <option value="twon">Twon Campus</option>
+                                </select>
+                            </div>
+                            <button type="button" class="btn-lookup" onclick="lookupAdmission()">
+                                <i class="fas fa-search"></i> Check Status
+                            </button>
+                        </div>
+                        <div id="lookupResult" style="display: none; margin-top: 1rem;"></div>
+                    </div>
+                </div>
+
+                <div class="progress-bar">
+                    <div class="progress-step active" data-step="1">
+                        <div class="step-circle">1</div>
+                        <div class="step-label">Personal Info</div>
+                    </div>
+                    <div class="progress-step" data-step="2">
+                        <div class="step-circle">2</div>
+                        <div class="step-label">Course Selection</div>
+                    </div>
+                    <div class="progress-step" data-step="3">
+                        <div class="step-circle">3</div>
+                        <div class="step-label">Review & Submit</div>
+                    </div>
+                </div>
+
+                <form id="admissionForm" class="application-form">
+                    <!-- Step 1: Personal Information -->
+                    <div class="form-step active" id="step1">
+                        <h3>Personal Information</h3>
+
+                        <div class="form-group">
+                            <label for="fullName">Full Name *</label>
+                            <input type="text" id="fullName" name="full_name" required>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="email">Email Address (Optional but Recommended)</label>
+                                <input type="email" id="email" name="email">
+                                <small style="color: #666; display: block; margin-top: 4px;">Provide this to receive
+                                    your admission letter via email.</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone Number *</label>
+                                <input type="tel" id="phone" name="phone" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="dob">Date of Birth *</label>
+                                <input type="date" id="dob" name="date_of_birth" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="gender">Gender *</label>
+                                <select id="gender" name="gender" required>
+                                    <option value="">Select Gender</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="kcse_grade">KCSE Grade *</label>
+                                <select id="kcse_grade" name="kcse_grade" required>
+                                    <option value="">Select KCSE Grade</option>
+                                    <option value="A">A</option>
+                                    <option value="A−">A−</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B">B</option>
+                                    <option value="B−">B−</option>
+                                    <option value="C+">C+</option>
+                                    <option value="C">C</option>
+                                    <option value="C−">C−</option>
+                                    <option value="D+">D+</option>
+                                    <option value="D">D</option>
+                                    <option value="D−">D−</option>
+                                    <option value="E">E</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="location">Location *</label>
+                            <input type="text" id="location" name="location" placeholder="Enter your location" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="campus">Preferred Campus *</label>
+                            <div class="radio-group">
+                                <label class="radio-label">
+                                    <input type="radio" name="campus" value="west" required>
+                                    <div class="radio-custom">
+                                        <i class="fas fa-building"></i>
+                                        <span>West Campus</span>
+                                    </div>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="campus" value="twon" required>
+                                    <div class="radio-custom">
+                                        <i class="fas fa-university"></i>
+                                        <span>Twon Campus</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-buttons">
+                            <button type="button" class="btn-next" onclick="nextStep()">Next <i
+                                    class="fas fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Course Selection -->
+                    <div class="form-step" id="step2">
+                        <h3>Course Selection</h3>
+
+                        <div class="form-group">
+                            <label for="department">Department *</label>
+                            <select id="department" name="department" required onchange="loadCourses()">
+                                <option value="">Select Department</option>
+                                <option value="1">Computer Science</option>
+                                <option value="2">Engineering</option>
+                                <option value="3">Business Administration</option>
+                                <option value="4">Arts and Humanities</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="course">Select Course *</label>
+                            <select id="course" name="course_id" required disabled>
+                                <option value="">Select Department First</option>
+                            </select>
+                        </div>
+
+                        <div class="course-details" id="courseDetails" style="display: none;">
+                            <h4>Course Information</h4>
+                            <div class="course-info">
+                                <div class="info-item">
+                                    <span class="info-label">Duration:</span>
+                                    <span class="info-value" id="courseDuration">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Fee per Term:</span>
+                                    <span class="info-value" id="courseFeeTerm">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Fee per Year:</span>
+                                    <span class="info-value" id="courseFeeYear">-</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-buttons">
+                            <button type="button" class="btn-prev" onclick="prevStep()"><i
+                                    class="fas fa-arrow-left"></i> Previous</button>
+                            <button type="button" class="btn-next" onclick="nextStep()">Next <i
+                                    class="fas fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Review & Submit -->
+                    <div class="form-step" id="step3">
+                        <h3>Review Your Application</h3>
+
+                        <div class="review-section">
+                            <h4>Personal Information</h4>
+                            <div class="review-info">
+                                <div class="review-item">
+                                    <span>Full Name:</span>
+                                    <strong id="reviewName">-</strong>
+                                </div>
+                                <div class="review-item">
+                                    <span>Email:</span>
+                                    <strong id="reviewEmail">-</strong>
+                                </div>
+                                <div class="review-item">
+                                    <span>Phone:</span>
+                                    <strong id="reviewPhone">-</strong>
+                                </div>
+                                <div class="review-item">
+                                    <span>Date of Birth:</span>
+                                    <strong id="reviewDOB">-</strong>
+                                </div>
+                                <div class="review-item">
+                                    <span>KCSE Grade:</span>
+                                    <strong id="reviewKCSEGrade">-</strong>
+                                </div>
+                                <div class="review-item">
+                                    <span>Campus:</span>
+                                    <strong id="reviewCampus">-</strong>
+                                </div>
+                                <div class="review-item">
+                                    <span>Location:</span>
+                                    <strong id="reviewLocation">-</strong>
+                                </div>
+                            </div>
+
+                            <h4>Course Information</h4>
+                            <div class="review-info">
+                                <div class="review-item">
+                                    <span>Course:</span>
+                                    <strong id="reviewCourse">-</strong>
+                                </div>
+                                <div class="review-item">
+                                    <span>Department:</span>
+                                    <strong id="reviewDepartment">-</strong>
+                                </div>
+                                <div class="review-item">
+                                    <span>Duration:</span>
+                                    <strong id="reviewDuration">-</span>
+                                </div>
+                                <div class="review-item">
+                                    <span>Annual Fee:</span>
+                                    <strong id="reviewFee">KSh -</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="terms" required>
+                                <span>I agree to the <a href="#" target="_blank">Terms and Conditions</a> and confirm
+                                    that all information provided is accurate.</span>
+                            </label>
+                        </div>
+
+                        <div class="form-buttons">
+                            <button type="button" class="btn-prev" onclick="prevStep()"><i
+                                    class="fas fa-arrow-left"></i> Previous</button>
+                            <button type="submit" class="btn-submit">Submit Application</button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Success Modal -->
+                <div id="successModal" class="modal">
+                    <div class="modal-content">
+                        <div class="modal-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h3>Application Submitted Successfully!</h3>
+                        <p>Your admission application has been received.</p>
+
+                        <div class="admission-details" id="admissionDetails">
+                            <p><strong>Admission Number:</strong> <span id="admissionNumber">-</span></p>
+                            <p><strong>Status:</strong> <span class="status-pending">Pending Review</span></p>
+                        </div>
+
+                        <div class="download-section">
+                            <p>Download your documents now:</p>
+                            <div class="download-buttons">
+                                <a id="downloadLink" class="btn-download" target="_blank">
+                                    <i class="fas fa-file-pdf"></i> Admission Letter
+                                </a>
+                                <a id="feeDownloadLink" class="btn-download btn-fee" target="_blank">
+                                    <i class="fas fa-file-invoice-dollar"></i> Fee Structure
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="modal-buttons">
+                            <button onclick="closeModal()" class="btn-close">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

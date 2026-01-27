@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Generation Test - Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .test-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .test-form {
+            display: grid;
+            gap: 1rem;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group label {
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+        }
+        .form-group input, .form-group select {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        .btn-test {
+            background: #28a745;
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background 0.3s ease;
+        }
+        .btn-test:hover {
+            background: #218838;
+        }
+        .btn-test:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 2rem;
+            padding: 1rem;
+            border-radius: 5px;
+            display: none;
+        }
+        .result.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .result.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .download-link {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.75rem 1.5rem;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+        .download-link:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h2><i class="fas fa-file-pdf"></i> PDF Generation Test</h2>
+        <p>Test the admission letter PDF generation by filling in student details below.</p>
+        
+        <form id="pdfTestForm" class="test-form">
+            <div class="form-group">
+                <label for="campus">Campus *</label>
+                <select id="campus" required>
+                    <option value="">Select Campus</option>
+                    <option value="twon">Twon Campus</option>
+                    <option value="west">West Campus</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="admissionNumber">Admission Number *</label>
+                <input type="text" id="admissionNumber" placeholder="e.g., TWON2024001" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="studentName">Student Name</label>
+                <input type="text" id="studentName" placeholder="e.g., John Doe">
+            </div>
+            
+            <div class="form-group">
+                <label for="course">Course</label>
+                <input type="text" id="course" placeholder="e.g., Bachelor of Computer Science">
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="e.g., john.doe@email.com">
+            </div>
+            
+            <div class="form-group">
+                <label for="phone">Phone</label>
+                <input type="tel" id="phone" placeholder="e.g., +254-712-345678">
+            </div>
+            
+            <div class="form-group">
+                <label for="kcseGrade">KCSE Grade</label>
+                <select id="kcseGrade">
+                    <option value="">Select Grade</option>
+                    <option value="A">A</option>
+                    <option value="A−">A−</option>
+                    <option value="B+">B+</option>
+                    <option value="B">B</option>
+                    <option value="B−">B−</option>
+                    <option value="C+">C+</option>
+                    <option value="C">C</option>
+                    <option value="C−">C−</option>
+                    <option value="D+">D+</option>
+                    <option value="D">D</option>
+                    <option value="D−">D−</option>
+                    <option value="E">E</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="btn-test">
+                <i class="fas fa-magic"></i> Generate PDF
+            </button>
+        </form>
+        
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('pdfTestForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const campus = document.getElementById('campus').value;
+            const admissionNumber = document.getElementById('admissionNumber').value;
+            
+            if (!campus || !admissionNumber) {
+                showResult('Please select campus and enter admission number', 'error');
+                return;
+            }
+            
+            const submitBtn = e.target.querySelector('.btn-test');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+            submitBtn.disabled = true;
+            
+            try {
+                const response = await fetch(`/api/${campus}/generate-admission-pdf/${admissionNumber}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showResult(`
+                        <h4><i class="fas fa-check-circle"></i> PDF Generated Successfully!</h4>
+                        <p>Filename: ${result.fileName}</p>
+                        <a href="${result.downloadUrl}" class="download-link" download>
+                            <i class="fas fa-download"></i> Download PDF
+                        </a>
+                    `, 'success');
+                } else {
+                    showResult(`Error: ${result.error}`, 'error');
+                }
+                
+            } catch (error) {
+                showResult(`Network error: ${error.message}`, 'error');
+            } finally {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+        
+        function showResult(message, type) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = message;
+            resultDiv.className = `result ${type}`;
+            resultDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

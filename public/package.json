@@ -1,0 +1,25 @@
+{
+  "name": "trica-vision-frontend",
+  "version": "1.0.0",
+  "description": "Frontend for East Africa Vision Institute Admission System",
+  "main": "index.html",
+  "scripts": {
+    "start": "live-server --port=3000 --open=index.html",
+    "dev": "live-server --port=3000 --open=index.html",
+    "build": "echo 'No build process needed for static site'",
+    "serve": "live-server --port=3000"
+  },
+  "keywords": [
+    "admission",
+    "education",
+    "frontend",
+    "html",
+    "css",
+    "javascript"
+  ],
+  "author": "East Africa Vision Institute",
+  "license": "MIT",
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  }
+}

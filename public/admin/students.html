@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management - East Africa Vision Institute</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <img src="../assets/logo.webp" alt="East Africa Vision Institute Logo" class="logo-img">
+                    <h3>EAST AFRICA VISION INSTITUTE</h3>
+                </div>
+            </div>
+
+            <div class="sidebar-menu">
+                <a href="index.html" class="menu-item">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="students.html" class="menu-item active">
+                    <i class="fas fa-users"></i>
+                    <span>Students</span>
+                </a>
+
+                <a href="courses.html" class="menu-item">
+                    <i class="fas fa-book"></i>
+                    <span>Courses</span>
+                </a>
+
+                <a href="add-student.html" class="menu-item">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Add Student</span>
+                </a>
+
+                <a href="print-records.html" class="menu-item">
+                    <i class="fas fa-print"></i>
+                    <span>Print Records</span>
+                </a>
+
+                <a href="reporting-dates.html" class="menu-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Reporting Dates</span>
+                </a>
+
+                <a href="settings.html" class="menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+
+                <a href="whatsapp-share.html" class="menu-item">
+                    <i class="fab fa-whatsapp"></i>
+                    <span>WhatsApp Share</span>
+                </a>
+            </div>
+
+            <div class="sidebar-footer">
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="breadcrumb">
+                    <a href="index.html">Dashboard</a>
+                    <span>/</span>
+                    <span>Students</span>
+                </div>
+
+                <div class="user-menu">
+                    <div class="campus-badge" id="campusBadge">West Campus</div>
+                    <div class="user-info">
+                        <div class="user-avatar" id="userAvatar">A</div>
+                        <span id="userName">Admin User</span>
+                    </div>
+                    <button class="mobile-menu-toggle" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Students Content -->
+            <div class="dashboard-content">
+                <div class="data-table-container">
+                    <div class="table-header">
+                        <h3>Student Management</h3>
+                        <div class="table-actions">
+                            <button class="btn btn-primary" onclick="location.href='add-student.html'"
+                                style="white-space: nowrap;">
+                                <i class="fas fa-user-plus"></i> Add Student
+                            </button>
+                            <div class="search-box">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="searchInput" placeholder="Search students...">
+                            </div>
+                            <select class="filter-select" id="courseFilter">
+                                <option value="">All Courses</option>
+                                <!-- Courses will be populated by JavaScript -->
+                            </select>
+                            <select class="filter-select" id="statusFilter">
+                                <option value="">All Status</option>
+                                <option value="pending">Pending</option>
+                                <option value="admitted">Admitted</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                            <button class="btn-export" onclick="exportStudents()">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                        </div>
+                    </div>
+
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Admission No.</th>
+                                <th>Full Name</th>
+                                <th>Course</th>
+                                <th>Phone</th>
+                                <th>Admission Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentsTableBody">
+                            <!-- Students will be loaded here -->
+                        </tbody>
+                    </table>
+
+                    <div class="pagination" id="pagination">
+                        <!-- Pagination will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Student Details Modal -->
+    <div class="modal-overlay" id="studentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Student Details</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="studentDetails">
+                    <!-- Student details will be loaded here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+                <button class="btn btn-primary" onclick="downloadAdmissionLetter()">
+                    <i class="fas fa-download"></i> Download Admission Letter
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="students.js"></script>
+</body>
+
+</html>

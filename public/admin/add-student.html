@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Student - East Africa Vision Institute</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <img src="../assets/logo.webp" alt="East Africa Vision Institute Logo" class="logo-img">
+                    <h3>EAST AFRICA VISION INSTITUTE</h3>
+                </div>
+            </div>
+
+            <div class="sidebar-menu">
+                <a href="index.html" class="menu-item">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="students.html" class="menu-item">
+                    <i class="fas fa-users"></i>
+                    <span>Students</span>
+                </a>
+
+                <a href="courses.html" class="menu-item">
+                    <i class="fas fa-book"></i>
+                    <span>Courses</span>
+                </a>
+
+                <a href="add-student.html" class="menu-item active">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Add Student</span>
+                </a>
+
+                <a href="print-records.html" class="menu-item">
+                    <i class="fas fa-print"></i>
+                    <span>Print Records</span>
+                </a>
+
+                <a href="reporting-dates.html" class="menu-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Reporting Dates</span>
+                </a>
+
+                <a href="settings.html" class="menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+
+                <a href="whatsapp-share.html" class="menu-item">
+                    <i class="fab fa-whatsapp"></i>
+                    <span>WhatsApp Share</span>
+                </a>
+            </div>
+
+            <div class="sidebar-footer">
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="breadcrumb">
+                    <a href="index.html">Dashboard</a>
+                    <span>/</span>
+                    <span>Add Student</span>
+                </div>
+
+                <div class="user-menu">
+                    <div class="campus-badge" id="campusBadge">West Campus</div>
+                    <div class="user-info">
+                        <div class="user-avatar" id="userAvatar">A</div>
+                        <span id="userName">Admin User</span>
+                    </div>
+                    <button class="mobile-menu-toggle" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Add Student Content -->
+            <div class="dashboard-content">
+                <div class="form-container">
+                    <div class="form-header">
+                        <h2>Add Student Manually</h2>
+                        <p>Fill in the student details to add them to the system</p>
+                    </div>
+
+                    <form id="addStudentForm" class="admin-form">
+                        <div class="form-section">
+                            <h3>Personal Information</h3>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="fullName">Full Name *</label>
+                                    <input type="text" id="fullName" name="full_name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email Address *</label>
+                                    <input type="email" id="email" name="email" required>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="phone">Phone Number *</label>
+                                    <input type="tel" id="phone" name="phone" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="dob">Date of Birth *</label>
+                                    <input type="date" id="dob" name="date_of_birth" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="location">Location *</label>
+                                <input type="text" id="location" name="location" placeholder="Enter student location"
+                                    required>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h3>Course Information</h3>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="studentDepartment">Department *</label>
+                                    <select id="studentDepartment" name="department_id" required
+                                        onchange="loadStudentCourses()">
+                                        <option value="">Select Department</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="studentCourse">Course *</label>
+                                    <select id="studentCourse" name="course_id" required disabled>
+                                        <option value="">Select Department First</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="course-preview" id="coursePreview" style="display: none;">
+                                <h4>Selected Course Details</h4>
+                                <div class="preview-grid">
+                                    <div class="preview-item">
+                                        <span>Duration:</span>
+                                        <strong id="previewDuration">-</strong>
+                                    </div>
+                                    <div class="preview-item">
+                                        <span>Fee per Term:</span>
+                                        <strong id="previewFeeTerm">-</strong>
+                                    </div>
+                                    <div class="preview-item">
+                                        <span>Fee per Year:</span>
+                                        <strong id="previewFeeYear">-</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h3>Admission Information</h3>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="admissionDate">Admission Date *</label>
+                                    <input type="date" id="admissionDate" name="admission_date" required>
+                                </div>
+                                <div class="form-group" style="display: none;">
+                                    <label for="studentStatus">Status *</label>
+                                    <select id="studentStatus" name="status" required>
+                                        <option value="admitted" selected>Admitted</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="remarks">Remarks</label>
+                                <textarea id="remarks" name="remarks" rows="2"
+                                    placeholder="Any additional notes..."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary"
+                                onclick="window.history.back()">Cancel</button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-user-plus"></i> Add Student
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal-overlay" id="successModal">
+        <div class="modal-content">
+            <div class="modal-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h3>Student Added Successfully!</h3>
+            <div class="admission-details">
+                <p><strong>Admission Number:</strong> <span id="generatedAdmissionNumber">-</span></p>
+                <p><strong>Status:</strong> <span id="generatedStatus" class="status-pending">Pending</span></p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeSuccessModal()">Add Another Student</button>
+                <button class="btn btn-primary" onclick="viewStudent()">View Student Details</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="add-student.js"></script>
+</body>
+
+</html>

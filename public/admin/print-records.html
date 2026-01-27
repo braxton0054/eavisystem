@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print Records - East Africa Vision Institute</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <img src="../assets/logo.webp" alt="East Africa Vision Institute Logo" class="logo-img">
+                    <h3>EAST AFRICA VISION INSTITUTE</h3>
+                </div>
+            </div>
+
+            <div class="sidebar-menu">
+                <a href="index.html" class="menu-item">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="students.html" class="menu-item">
+                    <i class="fas fa-users"></i>
+                    <span>Students</span>
+                </a>
+
+                <a href="courses.html" class="menu-item">
+                    <i class="fas fa-book"></i>
+                    <span>Courses</span>
+                </a>
+
+                <a href="add-student.html" class="menu-item">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Add Student</span>
+                </a>
+
+                <a href="print-records.html" class="menu-item active">
+                    <i class="fas fa-print"></i>
+                    <span>Print Records</span>
+                </a>
+
+                <a href="reporting-dates.html" class="menu-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Reporting Dates</span>
+                </a>
+
+                <a href="whatsapp-share.html" class="menu-item">
+                    <i class="fab fa-whatsapp"></i>
+                    <span>WhatsApp Share</span>
+                </a>
+            </div>
+
+            <div class="sidebar-footer">
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="breadcrumb">
+                    <a href="index.html">Dashboard</a>
+                    <span>/</span>
+                    <span>Print Records</span>
+                </div>
+
+                <div class="user-menu">
+                    <div class="campus-badge" id="campusBadge">West Campus</div>
+                    <div class="user-info">
+                        <div class="user-avatar" id="userAvatar">A</div>
+                        <span id="userName">Admin User</span>
+                    </div>
+                    <button class="mobile-menu-toggle" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Print Records Content -->
+            <div class="dashboard-content">
+                <div class="print-records-container">
+                    <div class="print-header">
+                        <h2>Print Student Records</h2>
+                        <p>Generate printable reports based on various filters</p>
+                    </div>
+
+                    <div class="print-filters">
+                        <div class="filter-card">
+                            <h3>Filter Options</h3>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="printCourse">Course</label>
+                                    <select id="printCourse">
+                                        <option value="">All Courses</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="display: none;">
+                                    <label for="printStatus">Status</label>
+                                    <select id="printStatus">
+                                        <option value="">All Status</option>
+                                        <option value="pending">Pending</option>
+                                        <option value="admitted">Admitted</option>
+                                        <option value="rejected">Rejected</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="printTerm">Term</label>
+                                    <select id="printTerm">
+                                        <option value="">All Terms</option>
+                                        <option value="1">Term 1</option>
+                                        <option value="2">Term 2</option>
+                                        <option value="3">Term 3</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="printDateRange">Date Range</label>
+                                    <select id="printDateRange">
+                                        <option value="all">All Time</option>
+                                        <option value="today">Today</option>
+                                        <option value="week">This Week</option>
+                                        <option value="month">This Month</option>
+                                        <option value="quarter">This Quarter</option>
+                                        <option value="year">This Year</option>
+                                        <option value="custom">Custom Range</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="custom-date-range" id="customDateRange" style="display: none;">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="startDate">Start Date</label>
+                                        <input type="date" id="startDate">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="endDate">End Date</label>
+                                        <input type="date" id="endDate">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="printFormat">Print Format</label>
+                                <div class="radio-group">
+                                    <label class="radio-label">
+                                        <input type="radio" name="printFormat" value="list" checked>
+                                        <div class="radio-custom">
+                                            <i class="fas fa-list"></i>
+                                            <span>Student List</span>
+                                        </div>
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="printFormat" value="details">
+                                        <div class="radio-custom">
+                                            <i class="fas fa-id-card"></i>
+                                            <span>Detailed Report</span>
+                                        </div>
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="printFormat" value="summary">
+                                        <div class="radio-custom">
+                                            <i class="fas fa-chart-bar"></i>
+                                            <span>Summary Report</span>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="filter-actions">
+                                <button class="btn btn-secondary" onclick="clearFilters()">
+                                    <i class="fas fa-redo"></i> Clear Filters
+                                </button>
+                                <button class="btn btn-primary" onclick="generateReport()">
+                                    <i class="fas fa-search"></i> Generate Report
+                                </button>
+                                <button class="btn btn-success" onclick="printReport()" disabled id="printBtn">
+                                    <i class="fas fa-print"></i> Print Report
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="preview-card">
+                            <h3>Report Preview</h3>
+                            <div class="preview-content" id="reportPreview">
+                                <div class="empty-preview">
+                                    <i class="fas fa-print"></i>
+                                    <p>Configure filters and generate a report to see preview</p>
+                                </div>
+                            </div>
+                            <div class="preview-stats" id="previewStats" style="display: none;">
+                                <p><strong>Total Students:</strong> <span id="totalCount">0</span></p>
+                                <p style="display: none;"><strong>Pending:</strong> <span id="pendingCount">0</span></p>
+                                <p style="display: none;"><strong>Admitted:</strong> <span id="admittedCount">0</span>
+                                </p>
+                                <p style="display: none;"><strong>Rejected:</strong> <span id="rejectedCount">0</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="print-records.js"></script>
+</body>
+
+</html>

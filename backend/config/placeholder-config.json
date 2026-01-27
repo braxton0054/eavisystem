@@ -1,0 +1,100 @@
+{
+  "placeholders": {
+    "STUDENT_NAME": {
+      "x": 200,
+      "y": 450,
+      "size": 14,
+      "bold": true
+    },
+    "ADMISSION_NUMBER": {
+      "x": 200,
+      "y": 420,
+      "size": 12,
+      "bold": false
+    },
+    "COURSE_NAME": {
+      "x": 200,
+      "y": 390,
+      "size": 12,
+      "bold": false
+    },
+    "DEPARTMENT": {
+      "x": 200,
+      "y": 360,
+      "size": 12,
+      "bold": false
+    },
+    "CAMPUS": {
+      "x": 200,
+      "y": 330,
+      "size": 12,
+      "bold": false
+    },
+    "EMAIL": {
+      "x": 200,
+      "y": 280,
+      "size": 12,
+      "bold": false
+    },
+    "PHONE": {
+      "x": 200,
+      "y": 250,
+      "size": 12,
+      "bold": false
+    },
+    "DATE_OF_BIRTH": {
+      "x": 200,
+      "y": 220,
+      "size": 12,
+      "bold": false
+    },
+    "LOCATION": {
+      "x": 200,
+      "y": 190,
+      "size": 12,
+      "bold": false
+    },
+    "KCSE_GRADE": {
+      "x": 200,
+      "y": 140,
+      "size": 12,
+      "bold": false
+    },
+    "ADMISSION_DATE": {
+      "x": 200,
+      "y": 110,
+      "size": 12,
+      "bold": false
+    },
+    "REPORTING_DATE": {
+      "x": 200,
+      "y": 80,
+      "size": 12,
+      "bold": false
+    },
+    "DURATION": {
+      "x": 450,
+      "y": 450,
+      "size": 12,
+      "bold": false
+    },
+    "FEE_PER_TERM": {
+      "x": 450,
+      "y": 420,
+      "size": 12,
+      "bold": false
+    },
+    "TOTAL_FEE": {
+      "x": 450,
+      "y": 390,
+      "size": 12,
+      "bold": false
+    },
+    "ISSUE_DATE": {
+      "x": 450,
+      "y": 150,
+      "size": 10,
+      "bold": false
+    }
+  }
+}

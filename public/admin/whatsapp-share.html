@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Share - East Africa Vision Institute</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <img src="../assets/logo.webp" alt="East Africa Vision Institute Logo" class="logo-img">
+                    <h3>EAST AFRICA VISION INSTITUTE</h3>
+                </div>
+            </div>
+
+            <div class="sidebar-menu">
+                <a href="index.html" class="menu-item">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="students.html" class="menu-item">
+                    <i class="fas fa-users"></i>
+                    <span>Students</span>
+                </a>
+
+                <a href="courses.html" class="menu-item">
+                    <i class="fas fa-book"></i>
+                    <span>Courses</span>
+                </a>
+
+                <a href="add-student.html" class="menu-item">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Add Student</span>
+                </a>
+
+                <a href="print-records.html" class="menu-item">
+                    <i class="fas fa-print"></i>
+                    <span>Print Records</span>
+                </a>
+
+                <a href="reporting-dates.html" class="menu-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Reporting Dates</span>
+                </a>
+
+                <a href="settings.html" class="menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+
+                <a href="whatsapp-share.html" class="menu-item active">
+                    <i class="fab fa-whatsapp"></i>
+                    <span>WhatsApp Share</span>
+                </a>
+            </div>
+
+            <div class="sidebar-footer">
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="breadcrumb">
+                    <a href="index.html">Dashboard</a>
+                    <span>/</span>
+                    <span>WhatsApp Share</span>
+                </div>
+
+                <div class="user-menu">
+                    <div class="campus-badge" id="campusBadge">West Campus</div>
+                    <div class="user-info">
+                        <div class="user-avatar" id="userAvatar">A</div>
+                        <span id="userName">Admin User</span>
+                    </div>
+                    <button class="mobile-menu-toggle" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- WhatsApp Share Content -->
+            <div class="dashboard-content">
+                <div class="whatsapp-container">
+                    <div class="whatsapp-header">
+                        <div class="whatsapp-icon">
+                            <i class="fab fa-whatsapp"></i>
+                        </div>
+                        <div class="whatsapp-info">
+                            <h2>Share Admission Letters via WhatsApp</h2>
+                            <p>Share admission PDFs with students by generating WhatsApp shareable links</p>
+                        </div>
+                    </div>
+
+                    <div class="whatsapp-content">
+                        <div class="share-filters">
+                            <div class="filter-card">
+                                <h3>Select Students to Share</h3>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="shareCourse">Filter by Course</label>
+                                        <select id="shareCourse">
+                                            <option value="">All Courses</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="shareStatus">Filter by Status</label>
+                                        <select id="shareStatus">
+                                            <option value="">All Status</option>
+                                            <option value="admitted">Admitted Only</option>
+                                            <option value="pending">Pending Only</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="shareSearch">Search Students</label>
+                                    <div class="search-with-button">
+                                        <input type="text" id="shareSearch"
+                                            placeholder="Search by name or admission number...">
+                                        <button class="btn btn-primary" onclick="searchStudents()">
+                                            <i class="fas fa-search"></i> Search
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="selection-actions">
+                                    <button class="btn btn-secondary" onclick="selectAllStudents()">
+                                        <i class="fas fa-check-square"></i> Select All
+                                    </button>
+                                    <button class="btn btn-secondary" onclick="clearSelection()">
+                                        <i class="fas fa-square"></i> Clear Selection
+                                    </button>
+                                    <button class="btn btn-primary" onclick="generateShareLinks()">
+                                        <i class="fab fa-whatsapp"></i> Generate Share Links
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="preview-card">
+                                <h3>Selected Students <span id="selectedCount">0</span></h3>
+                                <div class="selected-students" id="selectedStudents">
+                                    <div class="empty-selection">
+                                        <i class="fas fa-user-plus"></i>
+                                        <p>No students selected yet</p>
+                                        <small>Use the filters and table below to select students</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="students-table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th><input type="checkbox" id="tableSelectAll"
+                                                onchange="toggleTableSelectAll()"></th>
+                                        <th>Admission No.</th>
+                                        <th>Full Name</th>
+                                        <th>Course</th>
+                                        <th>Phone</th>
+                                        <th>Status</th>
+                                        <th>PDF Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="whatsappTableBody">
+                                    <!-- Students will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="share-message">
+                            <h3>WhatsApp Message</h3>
+                            <div class="message-content">
+                                <p><strong>Default Message:</strong></p>
+                                <div class="default-message">
+                                    "Dear [Student Name], Your admission letter has been generated. Download your PDF
+                                    here: [PDF Link]"
+                                </div>
+                                <p><small>This message will be automatically personalized with each student's
+                                        information and their generated PDF link.</small>
+                            </div>
+                        </div>
+
+                        <div class="share-results" id="shareResults" style="display: none;">
+                            <h3>Generated Share Links</h3>
+                            <div class="results-info">
+                                <p><strong>Total Links Generated:</strong> <span id="linksCount">0</span></p>
+                                <p><strong>Message Type:</strong> <span id="templateUsed">Default PDF Sharing</span></p>
+                            </div>
+                            <div class="links-container" id="linksContainer">
+                                <!-- Share links will be displayed here -->
+                            </div>
+                            <div class="results-actions">
+                                <button class="btn btn-secondary" onclick="copyAllLinks()">
+                                    <i class="fas fa-copy"></i> Copy All Links
+                                </button>
+                                <button class="btn btn-primary" onclick="openAllLinks()">
+                                    <i class="fab fa-whatsapp"></i> Open All in WhatsApp
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal-overlay" id="successModal">
+        <div class="modal-content">
+            <div class="modal-icon">
+                <i class="fab fa-whatsapp"></i>
+            </div>
+            <h3>Links Copied to Clipboard!</h3>
+            <p>All WhatsApp share links have been copied to your clipboard.</p>
+            <p class="modal-hint">You can now paste them anywhere or share them with students.</p>
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="closeSuccessModal()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="whatsapp-share.js"></script>
+</body>
+
+</html>

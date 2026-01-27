@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Settings - East Africa Vision Institute</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <img src="../assets/logo.webp" alt="East Africa Vision Institute Logo" class="logo-img">
+                    <h3>EAST AFRICA VISION INSTITUTE</h3>
+                </div>
+            </div>
+
+            <div class="sidebar-menu">
+                <a href="index.html" class="menu-item">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="students.html" class="menu-item">
+                    <i class="fas fa-users"></i>
+                    <span>Students</span>
+                </a>
+
+                <a href="courses.html" class="menu-item">
+                    <i class="fas fa-book"></i>
+                    <span>Courses</span>
+                </a>
+
+                <a href="add-student.html" class="menu-item">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Add Student</span>
+                </a>
+
+                <a href="print-records.html" class="menu-item">
+                    <i class="fas fa-print"></i>
+                    <span>Print Records</span>
+                </a>
+
+                <a href="reporting-dates.html" class="menu-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Reporting Dates</span>
+                </a>
+
+                <a href="settings.html" class="menu-item active">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+
+                <a href="whatsapp-share.html" class="menu-item">
+                    <i class="fab fa-whatsapp"></i>
+                    <span>WhatsApp Share</span>
+                </a>
+            </div>
+
+            <div class="sidebar-footer">
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="breadcrumb">
+                    <a href="index.html">Dashboard</a>
+                    <span>/</span>
+                    <span>Settings</span>
+                </div>
+
+                <div class="user-menu">
+                    <div class="campus-badge" id="campusBadge">West Campus</div>
+                    <div class="user-info">
+                        <div class="user-avatar" id="userAvatar">A</div>
+                        <span id="userName">Admin User</span>
+                    </div>
+                    <button class="mobile-menu-toggle" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Settings Content -->
+            <div class="dashboard-content">
+                <div class="form-container">
+                    <div class="form-header">
+                        <h2>Campus Admission Settings</h2>
+                        <p>Configure how admission numbers are generated for this campus</p>
+                    </div>
+
+                    <form id="settingsForm" class="admin-form">
+                        <div class="form-section">
+                            <h3>Admission Number Generation</h3>
+
+                            <div class="form-group">
+                                <label for="numberFormat">Admission Number Format *</label>
+                                <input type="text" id="numberFormat" name="admission_number_format"
+                                    placeholder="e.g. CAMPUS-{year}-{seq}" required>
+                                <small>Use <code>{seq}</code> for sequence and <code>{year}</code> for the current year
+                                    (e.g., 2026).</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="startingNumber">Starting Admission Number *</label>
+                                <input type="number" id="startingNumber" name="admission_starting_number" required>
+                                <small>The sequence will start from this number for new admissions.</small>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h3>Academic Term Reporting Dates</h3>
+                            <p>Set the reporting dates for each term. Dates must be in the future and on weekdays.</p>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="term1Date">Term 1 Reporting Date *</label>
+                                    <input type="date" id="term1Date" name="reporting_date_term1" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="term2Date">Term 2 Reporting Date *</label>
+                                    <input type="date" id="term2Date" name="reporting_date_term2" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="term3Date">Term 3 Reporting Date *</label>
+                                    <input type="date" id="term3Date" name="reporting_date_term3" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <div class="alert alert-warning"
+                                style="background: #fff3cd; padding: 1rem; border-radius: 8px; border-left: 4px solid #ffc107;">
+                                <i class="fas fa-exclamation-triangle"></i> <strong>Note:</strong> Starting number
+                                cannot be decreased below the current sequence.
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Settings
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="settings.js"></script>
+</body>
+
+</html>

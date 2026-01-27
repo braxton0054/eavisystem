@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporting Dates - East Africa Vision Institute</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <img src="../assets/logo.webp" alt="East Africa Vision Institute Logo" class="logo-img">
+                    <h3>EAST AFRICA VISION INSTITUTE</h3>
+                </div>
+            </div>
+
+            <div class="sidebar-menu">
+                <a href="index.html" class="menu-item">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="students.html" class="menu-item">
+                    <i class="fas fa-users"></i>
+                    <span>Students</span>
+                </a>
+
+                <a href="courses.html" class="menu-item">
+                    <i class="fas fa-book"></i>
+                    <span>Courses</span>
+                </a>
+
+                <a href="add-student.html" class="menu-item">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Add Student</span>
+                </a>
+
+                <a href="print-records.html" class="menu-item">
+                    <i class="fas fa-print"></i>
+                    <span>Print Records</span>
+                </a>
+
+                <a href="reporting-dates.html" class="menu-item active">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Reporting Dates</span>
+                </a>
+
+                <a href="settings.html" class="menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+
+                <a href="whatsapp-share.html" class="menu-item">
+                    <i class="fab fa-whatsapp"></i>
+                    <span>WhatsApp Share</span>
+                </a>
+            </div>
+
+            <div class="sidebar-footer">
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="breadcrumb">
+                    <a href="index.html">Dashboard</a>
+                    <span>/</span>
+                    <span>Reporting Dates</span>
+                </div>
+
+                <div class="user-menu">
+                    <div class="campus-badge" id="campusBadge">West Campus</div>
+                    <div class="user-info">
+                        <div class="user-avatar" id="userAvatar">A</div>
+                        <span id="userName">Admin User</span>
+                    </div>
+                    <button class="mobile-menu-toggle" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Reporting Dates Content -->
+            <div class="dashboard-content">
+                <div class="reporting-dates-container">
+                    <div class="reporting-header">
+                        <h2>Academic Term Management</h2>
+                        <p>Set and manage reporting dates for the three academic terms</p>
+                    </div>
+
+                    <div class="current-terms">
+                        <h3>Current Academic Year: <span id="academicYear">2026</span></h3>
+                        <div class="terms-grid">
+                            <!-- Term 1 -->
+                            <div class="term-card">
+                                <div class="term-header">
+                                    <h4>Term 1</h4>
+                                    <span class="term-status active">Current</span>
+                                </div>
+                                <div class="term-dates">
+                                    <div class="date-input">
+                                        <label>Start Date</label>
+                                        <input type="date" id="term1Start" value="2024-01-15">
+                                    </div>
+                                    <div class="date-input">
+                                        <label>End Date</label>
+                                        <input type="date" id="term1End" value="2024-04-15">
+                                    </div>
+                                </div>
+                                <div class="term-stats">
+                                    <div class="stat">
+                                        <i class="fas fa-users"></i>
+                                        <div>
+                                            <span class="stat-value" id="term1Students">45</span>
+                                            <span class="stat-label">Students</span>
+                                        </div>
+                                    </div>
+                                    <div class="stat">
+                                        <i class="fas fa-calendar-day"></i>
+                                        <div>
+                                            <span class="stat-value" id="term1Days">91</span>
+                                            <span class="stat-label">Days</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary btn-sm" onclick="updateTerm(1)">
+                                    <i class="fas fa-save"></i> Update Dates
+                                </button>
+                            </div>
+
+                            <!-- Term 2 -->
+                            <div class="term-card">
+                                <div class="term-header">
+                                    <h4>Term 2</h4>
+                                    <span class="term-status upcoming">Upcoming</span>
+                                </div>
+                                <div class="term-dates">
+                                    <div class="date-input">
+                                        <label>Start Date</label>
+                                        <input type="date" id="term2Start" value="2024-05-01">
+                                    </div>
+                                    <div class="date-input">
+                                        <label>End Date</label>
+                                        <input type="date" id="term2End" value="2024-08-01">
+                                    </div>
+                                </div>
+                                <div class="term-stats">
+                                    <div class="stat">
+                                        <i class="fas fa-users"></i>
+                                        <div>
+                                            <span class="stat-value" id="term2Students">50</span>
+                                            <span class="stat-label">Expected</span>
+                                        </div>
+                                    </div>
+                                    <div class="stat">
+                                        <i class="fas fa-calendar-day"></i>
+                                        <div>
+                                            <span class="stat-value" id="term2Days">92</span>
+                                            <span class="stat-label">Days</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary btn-sm" onclick="updateTerm(2)">
+                                    <i class="fas fa-save"></i> Update Dates
+                                </button>
+                            </div>
+
+                            <!-- Term 3 -->
+                            <div class="term-card">
+                                <div class="term-header">
+                                    <h4>Term 3</h4>
+                                    <span class="term-status upcoming">Upcoming</span>
+                                </div>
+                                <div class="term-dates">
+                                    <div class="date-input">
+                                        <label>Start Date</label>
+                                        <input type="date" id="term3Start" value="2024-09-01">
+                                    </div>
+                                    <div class="date-input">
+                                        <label>End Date</label>
+                                        <input type="date" id="term3End" value="2024-12-01">
+                                    </div>
+                                </div>
+                                <div class="term-stats">
+                                    <div class="stat">
+                                        <i class="fas fa-users"></i>
+                                        <div>
+                                            <span class="stat-value" id="term3Students">55</span>
+                                            <span class="stat-label">Expected</span>
+                                        </div>
+                                    </div>
+                                    <div class="stat">
+                                        <i class="fas fa-calendar-day"></i>
+                                        <div>
+                                            <span class="stat-value" id="term3Days">91</span>
+                                            <span class="stat-label">Days</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary btn-sm" onclick="updateTerm(3)">
+                                    <i class="fas fa-save"></i> Update Dates
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="terms-actions">
+                            <button class="btn btn-secondary" onclick="resetToDefault()">
+                                <i class="fas fa-redo"></i> Reset to Default
+                            </button>
+                            <button class="btn btn-success" onclick="saveAllTerms()">
+                                <i class="fas fa-save"></i> Save All Changes
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="student-assignment">
+                        <h3>Student Term Assignment</h3>
+                        <div class="assignment-controls">
+                            <div class="form-group">
+                                <label for="assignmentTerm">Assign to Term</label>
+                                <select id="assignmentTerm">
+                                    <option value="1">Term 1</option>
+                                    <option value="2">Term 2</option>
+                                    <option value="3">Term 3</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="assignmentCourse">Filter by Course</label>
+                                <select id="assignmentCourse">
+                                    <option value="">All Courses</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-primary" onclick="assignStudents()">
+                                <i class="fas fa-user-check"></i> Assign Selected
+                            </button>
+                        </div>
+
+                        <div class="assignment-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th>
+                                        <th>Admission No.</th>
+                                        <th>Name</th>
+                                        <th>Course</th>
+                                        <th>Current Term</th>
+                                        <th>Admission Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="assignmentTableBody">
+                                    <!-- Students will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="term-calendar">
+                        <h3>Academic Calendar</h3>
+                        <div class="calendar-view">
+                            <div class="calendar-header">
+                                <button onclick="previousMonth()"><i class="fas fa-chevron-left"></i></button>
+                                <h4 id="currentMonth">January 2024</h4>
+                                <button onclick="nextMonth()"><i class="fas fa-chevron-right"></i></button>
+                            </div>
+                            <div class="calendar-grid" id="calendarGrid">
+                                <!-- Calendar will be generated by JavaScript -->
+                            </div>
+                            <div class="calendar-legend">
+                                <div class="legend-item">
+                                    <span class="legend-color term1"></span>
+                                    <span>Term 1</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-color term2"></span>
+                                    <span>Term 2</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-color term3"></span>
+                                    <span>Term 3</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-color today"></span>
+                                    <span>Today</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="reporting-dates.js"></script>
+</body>
+
+</html>

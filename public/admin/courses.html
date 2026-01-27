@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Management - East Africa Vision Institute</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <img src="../assets/logo.webp" alt="East Africa Vision Institute Logo" class="logo-img">
+                    <h3>EAST AFRICA VISION INSTITUTE</h3>
+                </div>
+            </div>
+
+            <div class="sidebar-menu">
+                <a href="index.html" class="menu-item">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="students.html" class="menu-item">
+                    <i class="fas fa-users"></i>
+                    <span>Students</span>
+                </a>
+
+                <a href="courses.html" class="menu-item active">
+                    <i class="fas fa-book"></i>
+                    <span>Courses</span>
+                </a>
+
+                <a href="add-student.html" class="menu-item">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Add Student</span>
+                </a>
+
+                <a href="print-records.html" class="menu-item">
+                    <i class="fas fa-print"></i>
+                    <span>Print Records</span>
+                </a>
+
+                <a href="reporting-dates.html" class="menu-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Reporting Dates</span>
+                </a>
+
+                <a href="settings.html" class="menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+
+                <a href="whatsapp-share.html" class="menu-item">
+                    <i class="fab fa-whatsapp"></i>
+                    <span>WhatsApp Share</span>
+                </a>
+            </div>
+
+            <div class="sidebar-footer">
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="breadcrumb">
+                    <a href="index.html">Dashboard</a>
+                    <span>/</span>
+                    <span>Course Management</span>
+                </div>
+
+                <div class="user-menu">
+                    <div class="campus-badge" id="campusBadge">West Campus</div>
+                    <div class="user-info">
+                        <div class="user-avatar" id="userAvatar">A</div>
+                        <span id="userName">Admin User</span>
+                    </div>
+                    <button class="mobile-menu-toggle" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Courses Content -->
+            <div class="dashboard-content">
+                <div class="data-table-container">
+                    <div class="table-header">
+                        <h3>Course Management</h3>
+                        <div class="table-actions">
+                            <div class="search-box">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="searchCourse" placeholder="Search courses...">
+                            </div>
+                            <select class="filter-select" id="departmentFilter">
+                                <option value="">All Departments</option>
+                                <!-- Departments will be populated by JavaScript -->
+                            </select>
+                            <button class="btn btn-primary" onclick="openAddCourseModal()">
+                                <i class="fas fa-plus"></i> Add Course
+                            </button>
+                        </div>
+                    </div>
+
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Course Name</th>
+                                <th>Department</th>
+                                <th>Fee per Term</th>
+                                <th>Fee per Year</th>
+                                <th>Duration</th>
+                                <th>Fee Document</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="coursesTableBody">
+                            <!-- Courses will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Course Modal -->
+    <div class="modal-overlay" id="addCourseModal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3>Add New Course</h3>
+                <button class="modal-close" onclick="closeModal('addCourseModal')">&times;</button>
+            </div>
+            <form id="addCourseForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="courseCode">Course Code *</label>
+                        <input type="text" id="courseCode" name="course_code" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="courseName">Course Name *</label>
+                        <input type="text" id="courseName" name="name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="courseDescription">Description</label>
+                        <textarea id="courseDescription" name="description" rows="3"></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="department">Department *</label>
+                            <select id="department" name="department_id" required>
+                                <option value="">Select Department</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="duration">Duration (Years) *</label>
+                            <select id="duration" name="duration_years" required>
+                                <option value="1">1 Year</option>
+                                <option value="2">2 Years</option>
+                                <option value="3">3 Years</option>
+                                <option value="4">4 Years</option>
+                                <option value="5">5 Years</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="feePerTerm">Fee per Term ($) *</label>
+                            <input type="number" id="feePerTerm" name="fee_per_term" min="0" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="feePerYear">Fee per Year ($) *</label>
+                            <input type="number" id="feePerYear" name="fee_per_year" min="0" step="0.01" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="minimumKCSEGrade">Minimum KCSE Grade *</label>
+                        <select id="minimumKCSEGrade" name="minimum_kcse_grade" required>
+                            <option value="">Select Minimum KCSE Grade</option>
+                            <option value="A">A</option>
+                            <option value="A−">A−</option>
+                            <option value="B+">B+</option>
+                            <option value="B">B</option>
+                            <option value="B−">B−</option>
+                            <option value="C+">C+</option>
+                            <option value="C">C</option>
+                            <option value="C−" selected>C−</option>
+                            <option value="D+">D+</option>
+                            <option value="D">D</option>
+                            <option value="D−">D−</option>
+                            <option value="E">E</option>
+                        </select>
+                        <small class="form-help">Set the minimum KCSE grade required for admission to this
+                            course</small>
+                    </div>
+
+                    <!-- Fee PDF Section -->
+                    <div class="form-section">
+                        <h4>Fee Structure Document</h4>
+                        <div class="form-group">
+                            <label>Fee PDF Option</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="feeOption" value="existing" checked
+                                        onchange="toggleFeeOption('existing')">
+                                    <span>Select Existing Fee PDF</span>
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="feeOption" value="new" onchange="toggleFeeOption('new')">
+                                    <span>Upload New Fee PDF</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Existing Fee PDF Selection -->
+                        <div class="form-group" id="existingFeeSection">
+                            <label for="existingFeePdf">Select Existing Fee PDF</label>
+                            <select id="existingFeePdf" name="existingFeePdf">
+                                <option value="">No fee PDF selected</option>
+                                <!-- Existing fee PDFs will be populated by JavaScript -->
+                            </select>
+                        </div>
+
+                        <!-- New Fee PDF Upload -->
+                        <div class="form-group" id="newFeeSection" style="display: none;">
+                            <label for="feePdf">Upload New Fee PDF</label>
+                            <input type="file" id="feePdf" name="feePdf" accept=".pdf">
+                            <small class="form-help">Upload a PDF file containing the fee structure (Max 10MB)</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="feeName">Fee Document Name</label>
+                            <input type="text" id="feeName" name="feeName" placeholder="e.g., 2024 Fee Structure">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="feeDescription">Fee Description</label>
+                            <textarea id="feeDescription" name="feeDescription" rows="2"
+                                placeholder="Optional description of the fee structure"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary"
+                        onclick="closeModal('addCourseModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Course</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Course Modal -->
+    <div class="modal-overlay" id="editCourseModal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3>Edit Course</h3>
+                <button class="modal-close" onclick="closeModal('editCourseModal')">&times;</button>
+            </div>
+            <form id="editCourseForm">
+                <div class="modal-body">
+                    <input type="hidden" id="editCourseId">
+                    <div class="form-group">
+                        <label for="editCourseCode">Course Code *</label>
+                        <input type="text" id="editCourseCode" name="course_code" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editCourseName">Course Name *</label>
+                        <input type="text" id="editCourseName" name="name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editCourseDescription">Description</label>
+                        <textarea id="editCourseDescription" name="description" rows="3"></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editDepartment">Department *</label>
+                            <select id="editDepartment" name="department_id" required>
+                                <option value="">Select Department</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="editDuration">Duration (Years) *</label>
+                            <select id="editDuration" name="duration_years" required>
+                                <option value="1">1 Year</option>
+                                <option value="2">2 Years</option>
+                                <option value="3">3 Years</option>
+                                <option value="4">4 Years</option>
+                                <option value="5">5 Years</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editFeePerTerm">Fee per Term ($) *</label>
+                            <input type="number" id="editFeePerTerm" name="fee_per_term" min="0" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editFeePerYear">Fee per Year ($) *</label>
+                            <input type="number" id="editFeePerYear" name="fee_per_year" min="0" step="0.01" required>
+                        </div>
+                    </div>
+
+                    <!-- Fee PDF Section -->
+                    <div class="form-section">
+                        <h4>Fee Structure Document</h4>
+                        <div class="form-group">
+                            <label>Fee PDF Option</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="editFeeOption" value="existing" checked
+                                        onchange="toggleEditFeeOption('existing')">
+                                    <span>Select Existing Fee PDF</span>
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="editFeeOption" value="new"
+                                        onchange="toggleEditFeeOption('new')">
+                                    <span>Upload New Fee PDF</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Existing Fee PDF Selection -->
+                        <div class="form-group" id="editExistingFeeSection">
+                            <label for="editExistingFeePdf">Select Existing Fee PDF</label>
+                            <select id="editExistingFeePdf" name="existingFeePdf">
+                                <option value="">No fee PDF selected</option>
+                                <!-- Existing fee PDFs will be populated by JavaScript -->
+                            </select>
+                        </div>
+
+                        <!-- New Fee PDF Upload -->
+                        <div class="form-group" id="editNewFeeSection" style="display: none;">
+                            <label for="editFeePdf">Upload New Fee PDF</label>
+                            <input type="file" id="editFeePdf" name="feePdf" accept=".pdf">
+                            <small class="form-help">Upload a PDF file containing the fee structure (Max 10MB)</small>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="editIsActive" name="is_active">
+                            <span>Course is active</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary"
+                        onclick="closeModal('editCourseModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update Course</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="courses.js"></script>
+</body>
+
+</html>

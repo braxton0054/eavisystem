@@ -1,0 +1,37 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "server.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "server.js"
+    },
+    {
+      "src": "/generated-pdfs/(.*)",
+      "dest": "server.js"
+    },
+    {
+      "src": "/admin/(.*)",
+      "dest": "public/admin/$1"
+    },
+    {
+      "src": "/student/(.*)",
+      "dest": "public/student/$1"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "server.js"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
+}
