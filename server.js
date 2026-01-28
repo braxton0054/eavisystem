@@ -1150,41 +1150,9 @@ app.post('/api/:campus/fees/upload', uploadFee.single('feePdf'), (req, res) => {
 });
 
 app.get('/api/:campus/fees/download/:filename', (req, res) => {
-  try {
-    const { campus, filename } = req.params;
-    // Explicitly decode the filename in case of spaces/special chars
-    const decodedFilename = decodeURIComponent(filename);
-
-    console.log(`📥 Fee download request - Campus: ${campus}, File: "${decodedFilename}"`);
-
-    // Use process.cwd() for more reliable paths on Vercel
-    const rootDir = process.cwd();
-    const localPath = path.join(rootDir, 'backend', 'fee', decodedFilename);
-    const tmpPath = path.join('/tmp', 'fee', decodedFilename);
-
-    let finalPath = null;
-    if (fs.existsSync(localPath)) {
-      finalPath = localPath;
-      console.log(`✅ Found fee PDF locally: ${localPath}`);
-    } else if (fs.existsSync(tmpPath)) {
-      finalPath = tmpPath;
-      console.log(`✅ Found fee PDF in /tmp: ${tmpPath}`);
-    }
-
-    if (finalPath) {
-      // Set headers for PDF download
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', `attachment; filename="${decodedFilename.replace(/"/g, '')}"`);
-      return res.sendFile(finalPath);
-    } else {
-      console.warn(`❌ Fee PDF not found: "${decodedFilename}"`);
-      console.log('   Checked paths:', { localPath, tmpPath });
-      return res.status(404).json({ success: false, error: 'Fee PDF not found' });
-    }
-  } catch (error) {
-    console.error('🔥 Error in fee download endpoint:', error);
-    res.status(500).json({ success: false, error: 'Internal server error' });
-  }
+  const { filename } = req.params;
+  // Redirect to the new static path for backward compatibility
+  res.redirect(`/fee/${filename}`);
 });
 
 // API test routes
