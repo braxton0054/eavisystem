@@ -7,7 +7,6 @@
       "use": "@vercel/node",
       "config": {
         "includeFiles": [
-          "backend/fee/**",
           "backend/templates/**"
         ]
       }
@@ -21,6 +20,10 @@
     {
       "src": "/generated-pdfs/(.*)",
       "dest": "server.js"
+    },
+    {
+      "src": "/fee/(.*)",
+      "dest": "public/fee/$1"
     },
     {
       "src": "/admin/(.*)",

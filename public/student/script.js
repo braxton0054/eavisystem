@@ -28,7 +28,7 @@ async function lookupAdmission() {
         if (response.ok && result.success) {
             const student = result.data;
             const pdfUrl = `/api/${campus}/students/download/${student.admission_number}`;
-            const feeUrl = student.fee_structure_pdf_name ? `/api/${campus}/fees/download/${student.fee_structure_pdf_name}` : null;
+            const feeUrl = student.fee_structure_pdf_name ? `/fee/${student.fee_structure_pdf_name}` : null;
 
             resultDiv.innerHTML = `
                 <div class="lookup-result-card">
@@ -556,7 +556,7 @@ document.getElementById('admissionForm').addEventListener('submit', async functi
             admLink.href = `/api/${campus}/students/download/${result.data.admission_number}`;
 
             if (result.data.fee_structure_pdf_name) {
-                feeLink.href = `/api/${campus}/fees/download/${result.data.fee_structure_pdf_name}`;
+                feeLink.href = `/fee/${result.data.fee_structure_pdf_name}`;
                 feeLink.style.display = 'inline-block';
             } else {
                 feeLink.style.display = 'none';

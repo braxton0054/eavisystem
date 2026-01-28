@@ -397,7 +397,7 @@ function downloadAdmissionLetter(admissionNumber) {
 
 // Download fee structure PDF
 function downloadFeePDF(filename) {
-    window.open(`${API_BASE_URL}/${currentCampus}/fees/download/${filename}`, '_blank');
+    window.open(`/fee/${filename}`, '_blank');
 }
 
 // Share via WhatsApp
@@ -414,7 +414,7 @@ async function shareViaWhatsApp(admissionNumber) {
 
         const pdfLink = `${window.location.origin}/api/${currentCampus}/students/download/${admissionNumber}`;
         const feeLink = student.fee_structure_pdf_name
-            ? `${window.location.origin}/api/${currentCampus}/fees/download/${student.fee_structure_pdf_name}`
+            ? `${window.location.origin}/fee/${student.fee_structure_pdf_name}`
             : null;
 
         let message = `Dear ${student.full_name},

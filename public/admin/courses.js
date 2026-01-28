@@ -246,7 +246,7 @@ function renderCoursesTable(courses) {
         if (course.fee_structure_pdf_name) {
             const displayName = course.fee_structure_pdf_name.split('_').slice(1).join('_') || course.fee_structure_pdf_name;
             feeDocumentCell = `
-                <a href="${API_BASE_URL}/${currentCampus}/fees/download/${course.fee_structure_pdf_name}" 
+                <a href="/fee/${course.fee_structure_pdf_name}" 
                    target="_blank" 
                    class="fee-pdf-link" 
                    title="View Fee PDF">

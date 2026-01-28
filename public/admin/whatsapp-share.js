@@ -398,7 +398,7 @@ function generateShareLinks() {
 
 // Generate message for a specific student
 function generateMessageForStudent(student, pdfLink) {
-    const feeLink = student.feePdf ? `${API_BASE_URL}/${currentCampus}/fees/download/${student.feePdf}` : 'N/A';
+    const feeLink = student.feePdf ? `${window.location.origin}/fee/${student.feePdf}` : 'N/A';
 
     // Use default message and replace variables
     return defaultWhatsAppMessage

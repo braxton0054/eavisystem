@@ -17,7 +17,7 @@ const feeStorage = multer.diskStorage({
     const rootDir = process.cwd();
     const dir = process.env.VERCEL
       ? path.join('/tmp', 'fee')
-      : path.join(rootDir, 'backend', 'fee');
+      : path.join(rootDir, 'public', 'fee');
 
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
