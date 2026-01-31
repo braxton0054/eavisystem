@@ -4,7 +4,7 @@ const { Pool } = require('pg');
 const jwt = require('jsonwebtoken');
 const path = require('path');
 const fs = require('fs');
-const PDFTemplateFiller = require('./backend/utils/pdfTemplateFiller');
+const DynamicAdmissionPDFGenerator = require('./backend/utils/dynamicPdfGenerator');
 const emailService = require('./backend/utils/emailService');
 const bcrypt = require('bcryptjs');
 const multer = require('multer');
@@ -60,7 +60,13 @@ async function generateStudentPDF(client, campus, admissionNumber) {
   try {
     // 1. Get student info with course data
     const studentQuery = `
-      SELECT s.*, c.course_name, c.department, c.duration_years, c.fee_per_term, c.fee_per_year
+      SELECT s.*, 
+             c.course_name, 
+             c.department as course_dept, 
+             c.duration_years, 
+             c.fee_per_term as course_fee_term, 
+             c.fee_per_year as course_fee_year,
+             c.fee_structure_pdf_name
       FROM students s
       LEFT JOIN courses c ON s.course_id = c.course_id
       WHERE s.admission_number = $1 AND s.campus_name = $2
@@ -72,16 +78,15 @@ async function generateStudentPDF(client, campus, admissionNumber) {
     const student = result.rows[0];
     const filename = student.pdf_path || `${student.full_name.replace(/[^a-z0-9]/gi, '_')}.pdf`;
 
-    // Choose base path based on environment
     const rootDir = process.cwd();
     const baseDir = process.env.VERCEL
       ? path.join('/tmp', 'admission')
-      : path.join(rootDir, 'backend', 'admission');
+      : path.join(rootDir, 'backend', 'generated_pdfs');
 
     const filePath = path.join(baseDir, filename);
 
-    // If file already exists, return its path
-    if (fs.existsSync(filePath)) return filePath;
+    // Always generate fresh PDF to reflect combined 4-page format
+    // if (fs.existsSync(filePath)) return filePath;
 
     console.log(`Generating PDF for ${admissionNumber}...`);
 
@@ -90,35 +95,41 @@ async function generateStudentPDF(client, campus, admissionNumber) {
     const settings = settingsResult.rows[0] || {};
 
     // 3. Determine reporting date
-    let reportingDateStr = student.reporting_date ? new Date(student.reporting_date).toLocaleDateString() : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString();
+    // 3. Determine reporting date
+    // Monthly Intake System: Always use the globally set "Next Intake" date (stored in reporting_date_term1)
+    let reportingDateStr;
 
-    const term = parseInt(student.term);
-    if (term === 1 && settings.reporting_date_term1) reportingDateStr = new Date(settings.reporting_date_term1).toLocaleDateString();
-    else if (term === 2 && settings.reporting_date_term2) reportingDateStr = new Date(settings.reporting_date_term2).toLocaleDateString();
-    else if (term === 3 && settings.reporting_date_term3) reportingDateStr = new Date(settings.reporting_date_term3).toLocaleDateString();
+    if (settings.reporting_date_term1) {
+      reportingDateStr = new Date(settings.reporting_date_term1).toLocaleDateString();
+    } else {
+      // Fallback: 7 days from now
+      reportingDateStr = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString();
+    }
 
-    // 4. Fill template
-    const templateData = {
+    // 4. Generate PDF from scratch
+    const pdfBytes = await pdfGenerator.generateAdmissionLetter({
+      admission_number: admissionNumber,
       student_name: student.full_name,
-      admission_number: student.admission_number,
-      course_name: student.course_name,
-      department: student.department,
-      campus: student.campus_name,
-      email: student.email,
-      phone: student.phone_number,
-      date_of_birth: student.date_of_birth,
-      location: student.location,
-      kcse_grade: student.kcse_grade || 'Not Provided',
-      admission_date: student.admission_date,
       reporting_date: reportingDateStr,
-      duration: `${student.duration_years} year${student.duration_years > 1 ? 's' : ''}`,
-      fee_per_term: `KSh ${student.fee_per_term}`,
-      total_fee: `KSh ${student.fee_per_year * student.duration_years}`,
-      issue_date: new Date().toLocaleDateString()
-    };
+      fee_balance: student.fee_balance_per_term || student.course_fee_term || 0
+    }, {
+      course_name: student.course_name,
+      department_name: student.course_dept || student.department,
+      duration: `${student.duration_years || 0} year${(student.duration_years || 0) > 1 ? 's' : ''}`,
+      fee_per_term: student.course_fee_term,
+      fee_per_year: student.course_fee_year,
+      total_fee: (student.course_fee_year || 0) * (student.duration_years || 0),
+      fee_structure_pdf_name: student.fee_structure_pdf_name
+    });
 
-    const generatedPath = await pdfFiller.fillAndSaveTemplate(templateData);
-    const generatedFilename = path.basename(generatedPath);
+    const sanitizedAdm = admissionNumber.replace(/\//g, '_');
+    const generatedFilename = `admission_${sanitizedAdm}_${Date.now()}.pdf`;
+
+    // Set pdfGenerator output path to baseDir (works for both Vercel and local)
+    pdfGenerator.outputPath = baseDir;
+
+
+    const generatedPath = await pdfGenerator.savePDF(pdfBytes, generatedFilename);
 
     // 5. Update DB
     await client.query(
@@ -128,13 +139,43 @@ async function generateStudentPDF(client, campus, admissionNumber) {
 
     return generatedPath;
   } catch (err) {
-    console.error('Error generating student PDF:', err);
-    return null;
+    console.error('Error in generateStudentPDF:', err);
+    console.error('Stack trace:', err.stack);
+    console.error('Admission Number:', admissionNumber);
+    console.error('Campus:', campus);
+    throw err;
   }
 }
 
-// Initialize PDF template filler
-const pdfFiller = new PDFTemplateFiller();
+// Initialize Dynamic PDF Generator
+const pdfGenerator = new DynamicAdmissionPDFGenerator();
+
+// Serve fee structure PDFs from both public and tmp directories (Vercel compatibility)
+app.get('/fee/:filename', (req, res) => {
+  const { filename } = req.params;
+  const rootDir = process.cwd();
+
+  const publicPath = path.join(rootDir, 'public', 'fee', filename);
+  const tmpPath = path.join('/tmp', 'fee', filename);
+
+  if (fs.existsSync(publicPath)) {
+    return res.sendFile(publicPath);
+  } else if (fs.existsSync(tmpPath)) {
+    return res.sendFile(tmpPath);
+  } else {
+    // If not found in /tmp/fee, try /tmp/admission (just in case)
+    const altTmpPath = path.join('/tmp', 'admission', filename);
+    if (fs.existsSync(altTmpPath)) {
+      return res.sendFile(altTmpPath);
+    }
+    return res.status(404).json({ success: false, error: 'Fee structure PDF not found' });
+  }
+});
+
+// Alias for fee downloads for backward compatibility
+app.get('/api/:campus/fees/download/:filename', (req, res) => {
+  res.redirect(`/fee/${req.params.filename}`);
+});
 
 // Explicit routes first (before static files)
 app.get('/', (req, res) => {
@@ -173,7 +214,7 @@ app.get('/health', (req, res) => {
 });
 
 // Generate admission letter PDF by filling template
-app.post('/api/:campus/generate-admission-pdf/:studentId', async (req, res) => {
+app.post('/api/:campus/generate-admission-pdf/:studentId(*)', async (req, res) => {
   try {
     const { campus, studentId } = req.params;
 
@@ -212,29 +253,23 @@ app.post('/api/:campus/generate-admission-pdf/:studentId', async (req, res) => {
       else if (term === 2 && settings.reporting_date_term2) reportingDateStr = new Date(settings.reporting_date_term2).toLocaleDateString();
       else if (term === 3 && settings.reporting_date_term3) reportingDateStr = new Date(settings.reporting_date_term3).toLocaleDateString();
 
-      // Prepare data for template filling
-      const templateData = {
+      // Generate PDF from scratch
+      const pdfBytes = await pdfGenerator.generateAdmissionLetter({
+        admission_number: studentId,
         student_name: student.full_name,
-        admission_number: student.admission_number,
-        course_name: student.course_name,
-        department: student.department,
-        campus: student.campus_name,
-        email: student.email,
-        phone: student.phone_number,
-        date_of_birth: student.date_of_birth,
-        location: student.location,
-        kcse_grade: student.kcse_grade || 'Not Provided',
-        admission_date: student.admission_date,
         reporting_date: reportingDateStr,
+        fee_balance: student.fee_balance_per_term || student.fee_per_term || 0
+      }, {
+        course_name: student.course_name,
+        department_name: student.department,
         duration: `${student.duration_years} year${student.duration_years > 1 ? 's' : ''}`,
-        fee_per_term: `$${student.fee_per_term}`,
-        total_fee: `$${student.fee_per_year * student.duration_years}`,
-        issue_date: new Date().toLocaleDateString()
-      };
+        fee_per_term: student.fee_per_term,
+        fee_per_year: student.fee_per_year,
+        total_fee: student.fee_per_year * student.duration_years
+      });
 
-      // Fill template and save
-      const pdfPath = await pdfFiller.fillAndSaveTemplate(templateData);
-      const filename = path.basename(pdfPath);
+      const filename = `admission_${studentId}_${Date.now()}.pdf`;
+      const pdfPath = await pdfGenerator.savePDF(pdfBytes, filename);
 
       // Save filename to database
       await client.query(
@@ -498,6 +533,8 @@ app.get('/api/:campus/students', async (req, res) => {
         FROM students s
         LEFT JOIN courses c ON s.course_id = c.course_id
         WHERE s.campus_name = $1
+        ${req.query.gender ? `AND s.gender = '${req.query.gender}'` : ''}
+        ${req.query.course_id ? `AND s.course_id = ${parseInt(req.query.course_id)}` : ''} 
         ORDER BY s.created_at DESC
         LIMIT $2 OFFSET $3
       `;
@@ -598,136 +635,50 @@ app.get('/api/:campus/departments', async (req, res) => {
   }
 });
 
-app.get('/api/:campus/students/:admissionNumber', async (req, res) => {
+// Get list of fee structure PDFs
+app.get('/api/:campus/fees', async (req, res) => {
   try {
-    const { campus, admissionNumber } = req.params;
-    const pool = getPool(campus);
-    const client = await pool.connect();
+    const rootDir = process.cwd();
+    const feeDir = process.env.VERCEL
+      ? path.join('/tmp', 'fee')
+      : path.join(rootDir, 'public', 'fee');
 
-    try {
-      const query = `
-        SELECT s.*, c.course_name, c.department as department_name, c.fee_structure_pdf_name
-        FROM students s
-        LEFT JOIN courses c ON s.course_id = c.course_id
-        WHERE s.admission_number = $1 AND s.campus_name = $2
-      `;
-      const result = await client.query(query, [admissionNumber, campus]);
-
-      if (result.rows.length === 0) {
-        return res.status(404).json({ success: false, error: 'Student not found' });
-      }
-
-      res.json({ success: true, data: result.rows[0] });
-    } finally {
-      client.release();
+    // Ensure directory exists
+    if (!fs.existsSync(feeDir)) {
+      return res.json({ success: true, data: [] });
     }
+
+    // Read all PDF files from the directory
+    const files = fs.readdirSync(feeDir)
+      .filter(file => file.toLowerCase().endsWith('.pdf'))
+      .map(file => ({
+        filename: file,
+        displayName: file.replace(/^\d+_/, '').replace(/_/g, ' ').replace('.pdf', '')
+      }));
+
+    res.json({ success: true, data: files });
   } catch (error) {
-    console.error('Get student detail error:', error);
+    console.error('Get fees error:', error);
     res.status(500).json({ success: false, error: 'Internal server error' });
   }
 });
 
-// Download student admission PDF
-app.get('/api/:campus/students/download/:admissionNumber', async (req, res) => {
+// Upload fee structure PDF
+app.post('/api/:campus/fees/upload', uploadFee.single('feePdf'), async (req, res) => {
   try {
-    const { campus, admissionNumber } = req.params;
-    const pool = getPool(campus);
-    const client = await pool.connect();
-
-    try {
-      const pdfPath = await generateStudentPDF(client, campus, admissionNumber);
-      if (pdfPath) {
-        return res.sendFile(pdfPath);
-      } else {
-        return res.status(404).json({ success: false, error: 'Failed to generate admission letter' });
-      }
-    } finally {
-      client.release();
-    }
-  } catch (error) {
-    console.error('Error downloading PDF:', error);
-    res.status(500).json({ success: false, error: 'Failed to download admission letter' });
-  }
-});
-
-// Student registration
-app.post('/api/:campus/registration/register', async (req, res) => {
-  try {
-    const campus = req.params.campus;
-    const studentData = req.body;
-
-    const pool = getPool(campus);
-    const client = await pool.connect();
-
-    try {
-      // Use database function for sequential admission number
-      const admResult = await client.query('SELECT generate_admission_number($1) as admission_number', [campus]);
-      const admissionNumber = admResult.rows[0].admission_number;
-
-      // Insert student with 'admitted' status (auto-accept all students)
-      const result = await client.query(`
-        INSERT INTO students (
-          admission_number, full_name, email, phone_number, date_of_birth, 
-          location, course_id, term, campus_name, status, kcse_grade, admission_date, created_at
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW())
-        RETURNING *
-      `, [
-        admissionNumber,
-        studentData.full_name,
-        studentData.email,
-        studentData.phone_number || studentData.phone, // Support both field names
-        studentData.date_of_birth,
-        studentData.location,
-        studentData.course_id,
-        studentData.term || 1,
-        campus,
-        studentData.status || 'admitted',
-        studentData.kcse_grade || 'Not Provided',
-        studentData.admission_date || new Date().toISOString().split('T')[0]
-      ]);
-
-      // Fetch complete student info with course data for the response
-      const studentQuery = `
-        SELECT s.*, c.course_name, c.department as department_name, c.fee_structure_pdf_name 
-        FROM students s
-        LEFT JOIN courses c ON s.course_id = c.course_id
-        WHERE s.student_id = $1
-      `;
-      const fullResult = await client.query(studentQuery, [result.rows[0].student_id]);
-      const student = fullResult.rows[0];
-
-      // Trigger asynchronous PDF generation and Email sending
-      // We don't await this to keep registration response fast, 
-      // but the user wants "immediately download", so we might actually WANT to await PDF generation
-      const admissionPdfPath = await generateStudentPDF(client, campus, student.admission_number);
-
-      if (student.email) {
-        // Send email with both attachments
-        emailService.sendSubmissionEmail(student, admissionPdfPath, student.fee_structure_pdf_name)
-          .catch(err => console.error('Background email error:', err));
-      }
-
-      res.json({
-        success: true,
-        message: 'Student registration successful - Automatically admitted',
-        data: {
-          admission_number: student.admission_number,
-          status: 'admitted',
-          student_id: student.student_id,
-          fee_structure_pdf_name: student.fee_structure_pdf_name
-        }
-      });
-
-    } finally {
-      client.release();
+    if (!req.file) {
+      return res.status(400).json({ success: false, error: 'No file uploaded' });
     }
 
-  } catch (error) {
-    console.error('Student registration error:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Internal server error'
+    res.json({
+      success: true,
+      message: 'Fee structure PDF uploaded successfully',
+      filename: req.file.filename,
+      path: req.file.path
     });
+  } catch (error) {
+    console.error('Upload fee PDF error:', error);
+    res.status(500).json({ success: false, error: 'Internal server error' });
   }
 });
 
@@ -779,6 +730,163 @@ app.get('/api/:campus/students/lookup/phone', async (req, res) => {
     res.status(500).json({ success: false, error: 'Internal server error' });
   }
 });
+
+// Download student admission PDF
+app.get('/api/:campus/students/download/:admissionNumber(*)', async (req, res) => {
+
+  try {
+    const { campus, admissionNumber } = req.params;
+    const pool = getPool(campus);
+    const client = await pool.connect();
+
+    try {
+      const pdfPath = await generateStudentPDF(client, campus, admissionNumber);
+      if (pdfPath) {
+        return res.sendFile(pdfPath);
+      } else {
+        return res.status(404).json({ success: false, error: 'Failed to generate admission letter. Check server logs.' });
+      }
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    console.error('Error downloading PDF:', error);
+    res.status(500).json({ success: false, error: 'Failed to download admission letter: ' + error.message });
+  }
+});
+
+app.get('/api/:campus/students/:admissionNumber(*)', async (req, res) => {
+  try {
+    const { campus, admissionNumber } = req.params;
+    const pool = getPool(campus);
+    const client = await pool.connect();
+
+    try {
+      const query = `
+        SELECT s.*, c.course_name, c.department as department_name, c.fee_structure_pdf_name
+        FROM students s
+        LEFT JOIN courses c ON s.course_id = c.course_id
+        WHERE s.admission_number = $1 AND s.campus_name = $2
+      `;
+      const result = await client.query(query, [admissionNumber, campus]);
+
+      if (result.rows.length === 0) {
+        return res.status(404).json({ success: false, error: 'Student not found' });
+      }
+
+      res.json({ success: true, data: result.rows[0] });
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    console.error('Get student detail error:', error);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+});
+
+// Student registration
+app.post('/api/:campus/registration/register', async (req, res) => {
+  try {
+    const campus = req.params.campus;
+    const studentData = req.body;
+
+    // Age validation (must be 16+)
+    if (studentData.date_of_birth) {
+      const dob = new Date(studentData.date_of_birth);
+      const today = new Date();
+      let age = today.getFullYear() - dob.getFullYear();
+      const m = today.getMonth() - dob.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+        age--;
+      }
+
+      if (age < 16) {
+        return res.status(400).json({
+          success: false,
+          error: 'DETAILS ERROR CONTACT ADMISSION FOR MORE INFORMATION'
+        });
+      }
+    }
+
+    const pool = getPool(campus);
+    const client = await pool.connect();
+
+    try {
+      // Use database function for sequential admission number
+      const admResult = await client.query('SELECT generate_admission_number($1) as admission_number', [campus]);
+      const admissionNumber = admResult.rows[0].admission_number;
+
+      // Insert student with 'admitted' status (auto-accept all students)
+      const result = await client.query(`
+        INSERT INTO students (
+          admission_number, full_name, email, phone_number, date_of_birth, 
+          location, course_id, term, campus_name, status, kcse_grade, admission_date, gender, created_at
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, NOW())
+        RETURNING *
+      `, [
+        admissionNumber,
+        studentData.full_name,
+        studentData.email,
+        studentData.phone_number || studentData.phone, // Support both field names
+        studentData.date_of_birth,
+        studentData.location,
+        studentData.course_id,
+        studentData.term || 1,
+        campus,
+        studentData.status || 'admitted',
+        studentData.kcse_grade || 'Not Provided',
+        studentData.admission_date || new Date().toISOString().split('T')[0],
+        studentData.gender || 'Not Specified'
+      ]);
+
+      // Fetch complete student info with course data for the response
+      const studentQuery = `
+        SELECT s.*, c.course_name, c.department as department_name, c.fee_structure_pdf_name 
+        FROM students s
+        LEFT JOIN courses c ON s.course_id = c.course_id
+        WHERE s.student_id = $1
+      `;
+      const fullResult = await client.query(studentQuery, [result.rows[0].student_id]);
+      const student = fullResult.rows[0];
+
+      // Trigger asynchronous PDF generation and Email sending
+      // We don't await this to keep registration response fast, 
+      // but the user wants "immediately download", so we might actually WANT to await PDF generation
+      const admissionPdfPath = await generateStudentPDF(client, campus, student.admission_number);
+
+      if (student.email) {
+        // Send email with both attachments
+        await emailService.sendSubmissionEmail(student, admissionPdfPath)
+          .catch(err => console.error('Background email error:', err));
+      }
+
+      res.json({
+        success: true,
+        message: 'Student registration successful - Automatically admitted',
+        data: {
+          admission_number: student.admission_number,
+          status: 'admitted',
+          student_id: student.student_id,
+          fee_structure_pdf_name: student.fee_structure_pdf_name
+        }
+      });
+
+    } finally {
+      client.release();
+    }
+
+  } catch (error) {
+    console.error('Student registration error:', error);
+    console.error('Error stack:', error.stack);
+    console.error('Campus:', req.params.campus);
+    console.error('Student data:', JSON.stringify(req.body, null, 2));
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error: ' + error.message
+    });
+  }
+});
+
 
 // Delete course
 app.delete('/api/:campus/courses/:courseId', async (req, res) => {
@@ -873,22 +981,48 @@ app.put('/api/:campus/courses/:courseId', async (req, res) => {
         const otherClient = await otherPool.connect();
 
         try {
-          // Update the same course on the other campus by course_code
-          await otherClient.query(
-            `UPDATE courses 
-             SET course_name = $1, course_code = $2, department = $3, fee_per_term = $4, 
-                 fee_per_year = $5, duration_years = $6, is_active = $7, minimum_kcse_grade = $8,
-                 fee_structure_pdf_name = COALESCE($9, fee_structure_pdf_name)
-             WHERE course_code = $10 AND campus_name = $11`,
-            [
-              course_name || name, course_code, department, fee_per_term, fee_per_year,
-              duration_years, is_active, minimum_kcse_grade, fee_structure_pdf_name,
-              course_code, otherCampus
-            ]
-          );
-          console.log(`✅ Course synced to ${otherCampus} campus: ${course_code}`);
+          // 1. Try to update by course_code first (strongest match)
+          let syncResult = { rowCount: 0 };
+          if (course_code) {
+            syncResult = await otherClient.query(
+              `UPDATE courses 
+               SET course_name = $1, course_code = $2, department = $3, fee_per_term = $4, 
+                   fee_per_year = $5, duration_years = $6, is_active = $7, minimum_kcse_grade = $8,
+                   fee_structure_pdf_name = COALESCE($9, fee_structure_pdf_name),
+                   department_id = $10
+               WHERE course_code = $11 AND campus_name = $12 RETURNING *`,
+              [
+                course_name || name, course_code, department, fee_per_term, fee_per_year,
+                duration_years, is_active, minimum_kcse_grade, fee_structure_pdf_name,
+                req.body.department_id, course_code, otherCampus
+              ]
+            );
+          }
+
+          // 2. Fallback: Try to update by course_name if code match failed or code is missing
+          if (syncResult.rowCount === 0) {
+            syncResult = await otherClient.query(
+              `UPDATE courses 
+               SET course_code = $1, department = $2, fee_per_term = $3, 
+                   fee_per_year = $4, duration_years = $5, is_active = $6, minimum_kcse_grade = $7,
+                   fee_structure_pdf_name = COALESCE($8, fee_structure_pdf_name),
+                   department_id = $9
+               WHERE (course_name = $10 OR course_name = $11) AND campus_name = $12 RETURNING *`,
+              [
+                course_code, department, fee_per_term, fee_per_year,
+                duration_years, is_active, minimum_kcse_grade, fee_structure_pdf_name,
+                req.body.department_id, course_name || name, name || course_name, otherCampus
+              ]
+            );
+          }
+
+          if (syncResult.rowCount > 0) {
+            console.log(`✅ Course synced to ${otherCampus} campus: ${course_name || name} (${syncResult.rowCount} rows)`);
+          } else {
+            console.warn(`⚠️  Course sync to ${otherCampus} failed. No match found for Code [${course_code}] or Name [${course_name || name}]`);
+          }
         } catch (syncError) {
-          console.error(`⚠️  Failed to sync course to ${otherCampus}:`, syncError.message);
+          console.error(`❌ Failed to sync course to ${otherCampus}:`, syncError.message);
         } finally {
           otherClient.release();
         }
@@ -1166,6 +1300,66 @@ app.get('/api/twon/test', (req, res) => {
 
 app.get('/api/west/test', (req, res) => {
   res.json({ success: true, campus: 'west' });
+});
+
+// Get intake dates
+app.get('/api/:campus/intake-dates', async (req, res) => {
+  try {
+    const campus = req.params.campus;
+    const pool = getPool(campus);
+    const client = await pool.connect();
+    try {
+      const result = await client.query('SELECT * FROM intake_dates ORDER BY id ASC');
+      let data = result.rows;
+      if (data.length === 0) {
+        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        data = months.map(m => ({ month: m, reporting_date: null }));
+      }
+      res.json({ success: true, data });
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    console.error('Error fetching intake dates:', error);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+});
+
+// Save intake dates
+app.post('/api/:campus/intake-dates', async (req, res) => {
+  try {
+    const campus = req.params.campus;
+    const { dates } = req.body;
+
+    if (!Array.isArray(dates)) {
+      return res.status(400).json({ success: false, error: 'Invalid data format' });
+    }
+
+    const pool = getPool(campus);
+    const client = await pool.connect();
+
+    try {
+      await client.query('BEGIN');
+      for (const item of dates) {
+        await client.query(`
+            INSERT INTO intake_dates (campus_name, month, reporting_date)
+            VALUES ($1, $2, $3)
+            ON CONFLICT (campus_name, month) 
+            DO UPDATE SET reporting_date = Excluded.reporting_date
+          `, [campus, item.month, item.reporting_date || null]);
+      }
+      await client.query('COMMIT');
+      res.json({ success: true, message: 'Intake dates saved successfully' });
+    } catch (e) {
+      await client.query('ROLLBACK');
+      throw e;
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    console.error('Error saving intake dates:', error);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
 });
 
 // Start server

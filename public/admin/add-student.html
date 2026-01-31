@@ -49,20 +49,13 @@
                     <span>Print Records</span>
                 </a>
 
-                <a href="reporting-dates.html" class="menu-item">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span>Reporting Dates</span>
-                </a>
+
 
                 <a href="settings.html" class="menu-item">
                     <i class="fas fa-cog"></i>
                     <span>Settings</span>
                 </a>
 
-                <a href="whatsapp-share.html" class="menu-item">
-                    <i class="fab fa-whatsapp"></i>
-                    <span>WhatsApp Share</span>
-                </a>
             </div>
 
             <div class="sidebar-footer">
@@ -78,13 +71,14 @@
             <!-- Top Bar -->
             <div class="top-bar">
                 <div class="breadcrumb">
-                    <a href="index.html">Dashboard</a>
-                    <span>/</span>
-                    <span>Add Student</span>
+                    <a href="index.html" class="home-link">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard Home</span>
+                    </a>
                 </div>
 
                 <div class="user-menu">
-                    <div class="campus-badge" id="campusBadge">West Campus</div>
+                    <div class="campus-badge" id="campusBadge">Main Campus</div>
                     <div class="user-info">
                         <div class="user-avatar" id="userAvatar">A</div>
                         <span id="userName">Admin User</span>
@@ -113,8 +107,8 @@
                                     <input type="text" id="fullName" name="full_name" required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="email">Email Address *</label>
-                                    <input type="email" id="email" name="email" required>
+                                    <label for="email">Email Address (Recommended)</label>
+                                    <input type="email" id="email" name="email" placeholder="Optional">
                                 </div>
                             </div>
 
@@ -129,10 +123,21 @@
                                 </div>
                             </div>
 
-                            <div class="form-group">
-                                <label for="location">Location *</label>
-                                <input type="text" id="location" name="location" placeholder="Enter student location"
-                                    required>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="gender">Gender *</label>
+                                    <select id="gender" name="gender" required>
+                                        <option value="">Select Gender</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="location">Location *</label>
+                                    <input type="text" id="location" name="location"
+                                        placeholder="Enter student location" required>
+                                </div>
                             </div>
                         </div>
 

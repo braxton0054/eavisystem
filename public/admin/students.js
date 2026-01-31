@@ -101,7 +101,21 @@ async function loadStudents() {
         const params = new URLSearchParams();
         if (search) params.append('search', search);
         if (status) params.append('status', status);
-        if (courseId) params.append('course_id', courseId);
+
+        // Use group filter if set, otherwise use dropdown
+        if (groupFilter && groupFilter.type === 'gender') {
+            params.append('gender', groupFilter.value);
+        }
+
+        // Course can come from dropdown or group
+        if (courseId) {
+            params.append('course_id', courseId);
+        } else if (groupFilter && groupFilter.type === 'course') {
+            // If dropdown is empty but we clicked a group, force it? 
+            // Actually openGroup sets the dropdown value, so courseId should be populated.
+            // But let's be safe.
+            params.append('course_id', groupFilter.value);
+        }
 
         const queryString = params.toString();
         if (queryString) url += `&${queryString}`;
@@ -150,9 +164,6 @@ function renderStudentsTable(students) {
 
         // Build action buttons based on status
         let actionButtons = `
-            <button class="btn-action view" onclick="viewStudentDetails('${student.admission_number}')" title="View Details">
-                <i class="fas fa-eye"></i>
-            </button>
             <button class="btn-action delete" onclick="deleteStudent('${student.admission_number}', '${student.full_name}')" title="Delete Student">
                 <i class="fas fa-trash"></i>
             </button>
@@ -162,14 +173,9 @@ function renderStudentsTable(students) {
         // Add other action buttons
         if (true) {
             actionButtons += `
-                <button class="btn-action download" onclick="downloadAdmissionLetter('${student.admission_number}')" title="Download Admission Letter">
+                <button class="btn-action download" onclick="downloadPDF('${encodeURIComponent(student.admission_number)}')" title="Download Admission Package">
                     <i class="fas fa-file-pdf"></i>
                 </button>
-                ${student.fee_structure_pdf_name ? `
-                <button class="btn-action download" onclick="downloadFeePDF('${student.fee_structure_pdf_name}')" title="Download Fee Structure" style="background-color: #27ae60;">
-                    <i class="fas fa-file-invoice-dollar"></i>
-                </button>
-                ` : ''}
                 <button class="btn-action whatsapp" onclick="shareViaWhatsApp('${student.admission_number}')" title="Share via WhatsApp">
                     <i class="fab fa-whatsapp"></i>
                 </button>
@@ -178,12 +184,12 @@ function renderStudentsTable(students) {
 
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${student.admission_number}</td>
-            <td>${student.full_name}</td>
-            <td>${student.course_name || 'Not assigned'}</td>
-            <td>${student.phone_number || 'N/A'}</td>
-            <td>${new Date(student.admission_date).toLocaleDateString()}</td>
-            <td>
+            <td data-label="Admission No.">${student.admission_number}</td>
+            <td data-label="Full Name">${student.full_name}</td>
+            <td data-label="Course">${student.course_name || 'Not assigned'}</td>
+            <td data-label="Phone">${student.phone_number || 'N/A'}</td>
+            <td data-label="Admission Date">${new Date(student.admission_date).toLocaleDateString()}</td>
+            <td data-label="Actions">
                 <div class="action-buttons">
                     ${actionButtons}
                 </div>
@@ -338,7 +344,7 @@ function printStudent(admissionNumber) {
         </head>
         <body>
             <div class="header">
-                <h2>TRICA VISION INSTITUTE</h2>
+                <h2>EAST AFRICA VISION INSTITUTE</h2>
                 <h3>Student Admission Record</h3>
             </div>
             <div id="printContent">
@@ -390,63 +396,9 @@ function printStudent(admissionNumber) {
     printWindow.document.close();
 }
 
-// Download admission letter
-function downloadAdmissionLetter(admissionNumber) {
-    window.open(`${API_BASE_URL}/${currentCampus}/students/download/${admissionNumber}`, '_blank');
-}
-
-// Download fee structure PDF
-function downloadFeePDF(filename) {
-    window.open(`/fee/${filename}`, '_blank');
-}
-
-// Share via WhatsApp
-async function shareViaWhatsApp(admissionNumber) {
-    try {
-        const token = localStorage.getItem('admin_token');
-        const response = await fetch(`${API_BASE_URL}/${currentCampus}/students/${admissionNumber}`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-
-        if (!response.ok) throw new Error('Failed to fetch student info');
-        const data = await response.json();
-        const student = data.data;
-
-        const pdfLink = `${window.location.origin}/api/${currentCampus}/students/download/${admissionNumber}`;
-        const feeLink = student.fee_structure_pdf_name
-            ? `${window.location.origin}/fee/${student.fee_structure_pdf_name}`
-            : null;
-
-        let message = `Dear ${student.full_name},
-
-Congratulations! Your admission to East Africa Vision Institute has been confirmed.
-
-📄 *Admission Details:*
-• Admission Number: ${student.admission_number}
-• Course: ${student.course_name || 'Not assigned'}
-• Campus: ${currentCampus === 'west' ? 'West Campus' : 'Twon Campus'}
-
-📥 *Download Your Documents:*
-• Admission Letter: ${pdfLink}`;
-
-        if (feeLink) {
-            message += `
-• Fee Structure: ${feeLink}`;
-        }
-
-        message += `
-
-Please download and review your admission letter and fee structure.
-
-Best regards,
-East Africa Vision Institute`;
-
-        const whatsappUrl = `https://wa.me/${(student.phone_number || '').replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
-        window.open(whatsappUrl, '_blank');
-    } catch (error) {
-        console.error('Error sharing via WhatsApp:', error);
-        showNotification('Failed to share via WhatsApp', 'error');
-    }
+// Download PDF
+function downloadPDF(admissionNumber) {
+    window.open(`${API_BASE_URL}/${currentCampus}/students/download/${encodeURIComponent(admissionNumber)}`, '_blank');
 }
 
 // Export students to CSV
@@ -521,4 +473,134 @@ function debounce(func, wait) {
         clearTimeout(timeout);
         timeout = setTimeout(later, wait);
     };
+}
+
+// ==========================================
+// View Switcher & Group Logic
+// ==========================================
+
+let currentView = 'list';
+let groupFilter = null; // { type: 'course'|'gender', value: '...' }
+
+function switchView(viewName) {
+    currentView = viewName;
+
+    // Update buttons
+    document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelector(`.view-btn[onclick="switchView('${viewName}')"]`).classList.add('active');
+
+    // Hide all containers
+    document.getElementById('studentsListView').style.display = 'none';
+    document.getElementById('courseGroupView').style.display = 'none';
+    document.getElementById('genderGroupView').style.display = 'none';
+    document.getElementById('filterControls').style.display = 'none'; // Hide filters in group view initially
+
+    // Clear grouping filter when switching top-level views
+    if (groupFilter?.type !== viewName) {
+        groupFilter = null;
+    }
+
+    if (viewName === 'list') {
+        document.getElementById('studentsListView').style.display = 'block';
+        document.getElementById('filterControls').style.display = 'flex';
+        // Reset filters if we were in a group view previously
+        if (!groupFilter) {
+            loadStudents();
+        }
+    } else if (viewName === 'course') {
+        document.getElementById('courseGroupView').style.display = 'grid';
+        loadCourseGroups();
+    } else if (viewName === 'gender') {
+        document.getElementById('genderGroupView').style.display = 'grid';
+        loadGenderGroups();
+    }
+}
+
+async function loadCourseGroups() {
+    const container = document.getElementById('courseGroupView');
+    container.innerHTML = '<div style="text-align:center; width:100%;"><i class="fas fa-spinner fa-spin"></i> Loading Courses...</div>';
+
+    try {
+        // Re-use api to get courses
+        const token = localStorage.getItem('admin_token');
+        const response = await fetch(`${API_BASE_URL}/${currentCampus}/courses`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+
+        container.innerHTML = '';
+
+        if (data.data.length === 0) {
+            container.innerHTML = '<p>No courses found.</p>';
+            return;
+        }
+
+        data.data.forEach(course => {
+            const card = document.createElement('div');
+            card.className = 'group-card';
+            card.onclick = () => openGroup('course', course.course_id);
+            card.innerHTML = `
+                <div class="group-icon">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <div class="group-info">
+                    <h4>${course.course_name}</h4>
+                    <p>Click to view students</p>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+    } catch (error) {
+        console.error('Error loading course groups', error);
+        container.innerHTML = '<p>Error loading courses.</p>';
+    }
+}
+
+async function loadGenderGroups() {
+    const container = document.getElementById('genderGroupView');
+    container.innerHTML = '';
+
+    const genders = ['Male', 'Female', 'Other'];
+
+    genders.forEach(gender => {
+        const card = document.createElement('div');
+        card.className = 'group-card';
+        card.onclick = () => openGroup('gender', gender);
+        card.innerHTML = `
+            <div class="group-icon">
+                <i class="fas fa-${gender === 'Male' ? 'mars' : (gender === 'Female' ? 'venus' : 'genderless')}"></i>
+            </div>
+            <div class="group-info">
+                <h4>${gender}</h4>
+                <p>Click to view students</p>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+function openGroup(type, value) {
+    // Set the filter
+    groupFilter = { type, value };
+
+    // Switch UI to list view
+    currentView = 'list';
+    document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelector(`.view-btn[onclick="switchView('list')"]`).classList.add('active'); // Highlight list as active
+
+    document.getElementById('studentsListView').style.display = 'block';
+    document.getElementById('courseGroupView').style.display = 'none';
+    document.getElementById('genderGroupView').style.display = 'none';
+    document.getElementById('filterControls').style.display = 'flex';
+
+    // Apply value to filter inputs if they exist (visual feedback)
+    if (type === 'course') {
+        document.getElementById('courseFilter').value = value;
+        document.getElementById('statusFilter').value = ''; // Reset status
+    }
+
+    // Reload students with new filter
+    currentPage = 1;
+    loadStudents();
 }

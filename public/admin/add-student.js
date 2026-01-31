@@ -8,6 +8,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // Form submission
     document.getElementById('addStudentForm').addEventListener('submit', addStudentManually);
 
+    // Department selection event - load courses when department changes
+    document.getElementById('studentDepartment').addEventListener('change', loadStudentCourses);
+
     // Course selection event
     document.getElementById('studentCourse').addEventListener('change', function () {
         updateCoursePreview();
@@ -150,6 +153,18 @@ function updateCoursePreview() {
     }
 }
 
+// Calculate age from DOB
+function calculateAge(dobString) {
+    const dob = new Date(dobString);
+    const today = new Date();
+    let age = today.getFullYear() - dob.getFullYear();
+    const m = today.getMonth() - dob.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+        age--;
+    }
+    return age;
+}
+
 // Add student manually
 async function addStudentManually(e) {
     e.preventDefault();
@@ -160,6 +175,15 @@ async function addStudentManually(e) {
 
     // Add campus to data
     data.campus = currentCampus;
+
+    // Age validation
+    if (data.date_of_birth) {
+        const age = calculateAge(data.date_of_birth);
+        if (age < 16) {
+            showNotification('DETAILS ERROR CONTACT ADMISSION FOR MORE INFORMATION', 'warning');
+            return;
+        }
+    }
 
     try {
         const token = localStorage.getItem('admin_token');

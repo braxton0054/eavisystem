@@ -144,7 +144,7 @@ BEGIN
     
     -- If no settings found, create default
     IF v_format IS NULL THEN
-        v_format := UPPER(p_campus_name) || '-{year}-{seq}';
+        v_format := 'EAVI/{seq}/{year}';
         v_sequence_number := 1001;
         
         INSERT INTO campus_settings (campus_name, admission_number_format, current_sequence_number)
@@ -223,8 +223,8 @@ CREATE TRIGGER trigger_auto_generate_admission_number
 -- Insert sample campus settings
 INSERT INTO campus_settings (campus_name, admission_number_format, admission_starting_number, current_sequence_number, reporting_date_term1, reporting_date_term2, reporting_date_term3)
 VALUES 
-    ('twon', 'TWON-{year}-{seq}', 1001, 1001, CURRENT_DATE + INTERVAL '1 month', CURRENT_DATE + INTERVAL '4 months', CURRENT_DATE + INTERVAL '8 months'),
-    ('west', 'WEST-{year}-{seq}', 2001, 2001, CURRENT_DATE + INTERVAL '1 month', CURRENT_DATE + INTERVAL '4 months', CURRENT_DATE + INTERVAL '8 months')
+    ('twon', 'EAVI/{seq}/{year}', 1001, 1001, CURRENT_DATE + INTERVAL '1 month', CURRENT_DATE + INTERVAL '4 months', CURRENT_DATE + INTERVAL '8 months'),
+    ('west', 'EAVI/{seq}/{year}', 2001, 2001, CURRENT_DATE + INTERVAL '1 month', CURRENT_DATE + INTERVAL '4 months', CURRENT_DATE + INTERVAL '8 months')
 ON CONFLICT (campus_name) DO NOTHING;
 
 -- Insert sample admin users

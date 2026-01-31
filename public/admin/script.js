@@ -170,7 +170,8 @@ function loadRecentStudents(students) {
 async function viewStudentDetails(admissionNumber) {
     try {
         const token = localStorage.getItem('admin_token');
-        const response = await fetch(`${API_BASE_URL}/${currentCampus}/students/${admissionNumber}`, {
+        const encodedID = encodeURIComponent(admissionNumber);
+        const response = await fetch(`${API_BASE_URL}/${currentCampus}/students/${encodedID}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -221,14 +222,12 @@ async function viewStudentDetails(admissionNumber) {
                     </div>
                 </div>
                 <div class="modal-actions">
-                    <button class="btn btn-primary" onclick="downloadPDF('${student.admission_number}')">
-                        <i class="fas fa-file-pdf"></i> Admission Letter
+                    <button class="btn btn-primary" onclick="downloadPDF('${encodeURIComponent(student.admission_number)}')">
+                        <i class="fas fa-file-pdf"></i> Admission Package
                     </button>
-                    ${student.fee_structure_pdf_name ? `
-                    <button class="btn btn-primary" style="background-color: #27ae60;" onclick="downloadFeePDF('${student.fee_structure_pdf_name}')">
-                        <i class="fas fa-file-invoice-dollar"></i> Fee Structure
+                    <button class="btn btn-success" style="background-color: #25D366;" onclick="shareViaWhatsApp('${student.admission_number}')">
+                        <i class="fab fa-whatsapp"></i> Share Package
                     </button>
-                    ` : ''}
                 </div>
             `;
 
@@ -240,21 +239,83 @@ async function viewStudentDetails(admissionNumber) {
     }
 }
 
-// Download admission letter PDF
+// Download admission package PDF
 function downloadPDF(admissionNumber) {
-    window.open(`${API_BASE_URL}/${currentCampus}/students/download/${admissionNumber}`, '_blank');
+    window.open(`${API_BASE_URL}/${currentCampus}/students/download/${encodeURIComponent(admissionNumber)}`, '_blank');
 }
 
-// Download fee structure PDF
-function downloadFeePDF(filename) {
-    window.open(`${API_BASE_URL}/${currentCampus}/fees/download/${filename}`, '_blank');
+// Share via WhatsApp with PDF support
+async function shareViaWhatsApp(admissionNumber) {
+    try {
+        const token = localStorage.getItem('admin_token');
+        const response = await fetch(`${API_BASE_URL} /${currentCampus}/students / ${admissionNumber} `, {
+            headers: { 'Authorization': `Bearer ${token} ` }
+        });
+
+        if (!response.ok) throw new Error('Failed to fetch student info');
+        const data = await response.json();
+        const student = data.data;
+
+        const pdfLink = `${window.location.origin}/api/${currentCampus}/students/download/${admissionNumber}`;
+
+        const campusName = currentCampus === 'west' ? 'West Campus (Mailinne)' : 'Main Campus (City Plaza)';
+
+        let message = `Dear ${student.full_name},
+        
+Congratulations! Your admission to East Africa Vision Institute has been confirmed.
+
+📄 *Admission Details:*
+• Admission Number: ${student.admission_number}
+• Course: ${student.course_name || 'Not assigned'}
+• Campus: ${campusName}
+
+📥 *Download Your Document:*
+• Admission Letter & Fee Structure: ${pdfLink}
+
+*Note: Your Fee Structure is included as the 4th page of the Admission Letter.*`;
+
+        message += `\n\nBest regards,\nEast Africa Vision Institute`;
+
+        // Try to share as actual FILES if supported (Web Share API)
+        if (navigator.share && navigator.canShare) {
+            try {
+                const files = [];
+
+                const admResp = await fetch(pdfLink, { headers: { 'Authorization': `Bearer ${token}` } });
+                if (admResp.ok) {
+                    const blob = await admResp.blob();
+                    files.push(new File([blob], `Admission_Package_${admissionNumber}.pdf`, { type: 'application/pdf' }));
+                }
+
+                if (files.length > 0 && navigator.canShare({ files })) {
+                    await navigator.share({
+                        files: files,
+                        title: 'Admission Package',
+                        text: message
+                    });
+                    return;
+                }
+            } catch (shareErr) {
+                console.warn('File share failed, falling back to text link:', shareErr);
+            }
+        }
+
+        const whatsappUrl = `https://wa.me/${(student.phone_number || '').replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
+    } catch (error) {
+        console.error('Error sharing via WhatsApp:', error);
+        if (typeof showNotification === 'function') {
+            showNotification('Failed to share via WhatsApp', 'error');
+        }
+    }
 }
 
 // Update student status
 async function updateStatus(admissionNumber, status) {
     try {
         const token = localStorage.getItem('admin_token');
-        const response = await fetch(`${API_BASE_URL}/${currentCampus}/students/${admissionNumber}/status`, {
+        const encodedID = encodeURIComponent(admissionNumber);
+        const response = await fetch(`${API_BASE_URL}/${currentCampus}/students/${encodedID}/status`, {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${token}`,

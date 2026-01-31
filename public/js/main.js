@@ -49,6 +49,34 @@ document.addEventListener('DOMContentLoaded', function () {
     if (yearSpan) {
         yearSpan.textContent = new Date().getFullYear();
     }
+
+    // Dynamic Intake Detection
+    const intakeMonthSpan = document.querySelector('#intakeMonth');
+    const intakeYearSpan = document.querySelector('#intakeYear');
+
+    if (intakeMonthSpan && intakeYearSpan) {
+        const now = new Date();
+        const month = now.getMonth(); // 0-11
+        let year = now.getFullYear();
+        const monthNames = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+
+        let intakeMonth = '';
+
+        // Logic: Monthly intake except December. 
+        // If it reaches November (10), show January of next year.
+        if (month >= 10) { // November or December
+            intakeMonth = "January";
+            year++;
+        } else {
+            intakeMonth = monthNames[month];
+        }
+
+        intakeMonthSpan.textContent = intakeMonth;
+        intakeYearSpan.textContent = year;
+    }
 });
 
 // Form validation helper

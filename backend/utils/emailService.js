@@ -26,7 +26,7 @@ class EmailService {
         });
     }
 
-    async sendSubmissionEmail(studentData, admissionPdfPath, feePdfName) {
+    async sendSubmissionEmail(studentData, admissionPdfPath) {
         if (!studentData.email) {
             console.warn('⚠️  Cannot send email: No student email provided');
             return { success: false, error: 'No student email provided' };
@@ -38,27 +38,15 @@ class EmailService {
             return { success: false, error: 'Email configuration missing - check .env file' };
         }
 
-        const feePdfPath = feePdfName ? path.join(__dirname, '..', 'fee', feePdfName) : null;
-
         const attachments = [];
         if (admissionPdfPath && fs.existsSync(admissionPdfPath)) {
             attachments.push({
-                filename: `Admission_Letter_${studentData.admission_number}.pdf`,
+                filename: `Admission_Package_${studentData.admission_number.replace(/\//g, '_')}.pdf`,
                 path: admissionPdfPath
             });
-            console.log('✅ Admission PDF attached:', admissionPdfPath);
+            console.log('✅ Admission Package PDF attached:', admissionPdfPath);
         } else {
             console.warn('⚠️  Admission PDF not found:', admissionPdfPath);
-        }
-
-        if (feePdfPath && fs.existsSync(feePdfPath)) {
-            attachments.push({
-                filename: `Fee_Structure_${feePdfName.split('_').slice(1).join('_') || 'Course'}.pdf`,
-                path: feePdfPath
-            });
-            console.log('✅ Fee Structure PDF attached:', feePdfPath);
-        } else if (feePdfName) {
-            console.warn('⚠️  Fee Structure PDF not found:', feePdfPath);
         }
 
         const mailOptions = {
@@ -113,34 +101,23 @@ class EmailService {
                                                             <strong>📚 Course:</strong> ${studentData.course_name || 'Your chosen course'}
                                                         </p>
                                                         <p style="margin: 0; color: #2c3e50; font-size: 15px;">
-                                                            <strong>🏫 Campus:</strong> ${studentData.campus_name === 'west' ? 'West Campus' : 'Twon Campus'}
+                                                            <strong>🏫 Campus:</strong> ${studentData.campus_name === 'west' ? 'West Campus (Mailinne)' : 'Main Campus (City Plaza)'}
                                                         </p>
                                                     </td>
                                                 </tr>
                                             </table>
                                             
                                             <p style="color: #555; line-height: 1.8; margin: 25px 0; font-size: 16px;">
-                                                We have attached the following documents to this email:
+                                                We have attached your <strong>Admission Package</strong> to this email. 
+                                                <br><br>
+                                                <strong>Note:</strong> The package is a single PDF containing:
+                                                <ul style="color: #555; line-height: 1.6;">
+                                                    <li>Admission Letter</li>
+                                                    <li>Bursary Support Letter</li>
+                                                    <li>Requirements List</li>
+                                                    <li><strong>Fee Structure (Page 4)</strong></li>
+                                                </ul>
                                             </p>
-                                            
-                                            <!-- Documents List -->
-                                            <table width="100%" cellpadding="0" cellspacing="0" style="margin: 20px 0;">
-                                                <tr>
-                                                    <td style="padding: 12px; background-color: #e8f5e9; border-radius: 6px; margin-bottom: 10px;">
-                                                        <p style="margin: 0; color: #2c3e50; font-size: 15px;">
-                                                            ✅ <strong>Admission Letter</strong> - Your official admission document
-                                                        </p>
-                                                    </td>
-                                                </tr>
-                                                <tr><td style="height: 10px;"></td></tr>
-                                                <tr>
-                                                    <td style="padding: 12px; background-color: #fff3e0; border-radius: 6px;">
-                                                        <p style="margin: 0; color: #2c3e50; font-size: 15px;">
-                                                            💰 <strong>Fee Structure</strong> - Complete breakdown of course fees
-                                                        </p>
-                                                    </td>
-                                                </tr>
-                                            </table>
                                             
                                             <p style="color: #555; line-height: 1.8; margin: 25px 0 0 0; font-size: 16px;">
                                                 Please review these documents carefully and follow the instructions provided for your reporting date.

@@ -49,20 +49,13 @@
                     <span>Print Records</span>
                 </a>
 
-                <a href="reporting-dates.html" class="menu-item">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span>Reporting Dates</span>
-                </a>
+
 
                 <a href="settings.html" class="menu-item">
                     <i class="fas fa-cog"></i>
                     <span>Settings</span>
                 </a>
 
-                <a href="whatsapp-share.html" class="menu-item">
-                    <i class="fab fa-whatsapp"></i>
-                    <span>WhatsApp Share</span>
-                </a>
             </div>
 
             <div class="sidebar-footer">
@@ -78,13 +71,14 @@
             <!-- Top Bar -->
             <div class="top-bar">
                 <div class="breadcrumb">
-                    <a href="index.html">Dashboard</a>
-                    <span>/</span>
-                    <span>Home</span>
+                    <a href="index.html" class="home-link">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard Home</span>
+                    </a>
                 </div>
 
                 <div class="user-menu">
-                    <div class="campus-badge" id="campusBadge">West Campus</div>
+                    <div class="campus-badge" id="campusBadge">Main Campus</div>
                     <div class="user-info">
                         <div class="user-avatar" id="userAvatar">A</div>
                         <span id="userName">Admin User</span>
@@ -134,13 +128,9 @@
                                 <i class="fas fa-print"></i>
                                 <span>Print Records</span>
                             </div>
-                            <div class="action-btn" onclick="location.href='whatsapp-share.html'">
-                                <i class="fab fa-whatsapp"></i>
-                                <span>Share via WhatsApp</span>
-                            </div>
-                            <div class="action-btn" onclick="location.href='reporting-dates.html'">
+                            <div class="action-btn" onclick="location.href='settings.html'">
                                 <i class="fas fa-calendar-alt"></i>
-                                <span>Set Reporting Dates</span>
+                                <span>Intake Settings</span>
                             </div>
                         </div>
                     </div>
@@ -156,47 +146,7 @@
                     </div>
                 </div>
 
-                <!-- Upcoming Reporting Dates -->
-                <div class="dashboard-card" style="margin-top: 2rem;">
-                    <h3>Upcoming Reporting Dates</h3>
-                    <div class="reporting-dates">
-                        <div class="date-cards">
-                            <div class="date-card">
-                                <div class="date-header">
-                                    <h4>Term 1</h4>
-                                    <span class="date-status active">Current</span>
-                                </div>
-                                <div class="date-info">
-                                    <p><i class="far fa-calendar"></i> Start: <strong>Jan 15, 2024</strong></p>
-                                    <p><i class="far fa-calendar"></i> End: <strong>Apr 15, 2024</strong></p>
-                                    <p><i class="fas fa-users"></i> Students: <strong>45</strong></p>
-                                </div>
-                            </div>
-                            <div class="date-card">
-                                <div class="date-header">
-                                    <h4>Term 2</h4>
-                                    <span class="date-status upcoming">Upcoming</span>
-                                </div>
-                                <div class="date-info">
-                                    <p><i class="far fa-calendar"></i> Start: <strong>May 1, 2024</strong></p>
-                                    <p><i class="far fa-calendar"></i> End: <strong>Aug 1, 2024</strong></p>
-                                    <p><i class="fas fa-users"></i> Expected: <strong>50</strong></p>
-                                </div>
-                            </div>
-                            <div class="date-card">
-                                <div class="date-header">
-                                    <h4>Term 3</h4>
-                                    <span class="date-status upcoming">Upcoming</span>
-                                </div>
-                                <div class="date-info">
-                                    <p><i class="far fa-calendar"></i> Start: <strong>Sep 1, 2024</strong></p>
-                                    <p><i class="far fa-calendar"></i> End: <strong>Dec 1, 2024</strong></p>
-                                    <p><i class="fas fa-users"></i> Expected: <strong>55</strong></p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
             </div>
         </main>
     </div>

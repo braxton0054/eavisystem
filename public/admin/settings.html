@@ -49,20 +49,13 @@
                     <span>Print Records</span>
                 </a>
 
-                <a href="reporting-dates.html" class="menu-item">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span>Reporting Dates</span>
-                </a>
+
 
                 <a href="settings.html" class="menu-item active">
                     <i class="fas fa-cog"></i>
                     <span>Settings</span>
                 </a>
 
-                <a href="whatsapp-share.html" class="menu-item">
-                    <i class="fab fa-whatsapp"></i>
-                    <span>WhatsApp Share</span>
-                </a>
             </div>
 
             <div class="sidebar-footer">
@@ -78,9 +71,10 @@
             <!-- Top Bar -->
             <div class="top-bar">
                 <div class="breadcrumb">
-                    <a href="index.html">Dashboard</a>
-                    <span>/</span>
-                    <span>Settings</span>
+                    <a href="index.html" class="home-link">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard Home</span>
+                    </a>
                 </div>
 
                 <div class="user-menu">
@@ -123,21 +117,15 @@
                         </div>
 
                         <div class="form-section">
-                            <h3>Academic Term Reporting Dates</h3>
-                            <p>Set the reporting dates for each term. Dates must be in the future and on weekdays.</p>
+                            <h3>Monthly Intake Calendar</h3>
+                            <p>Set the reporting date for each monthly intake. Use the calendar below to define dates
+                                for the entire year.</p>
 
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="term1Date">Term 1 Reporting Date *</label>
-                                    <input type="date" id="term1Date" name="reporting_date_term1" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="term2Date">Term 2 Reporting Date *</label>
-                                    <input type="date" id="term2Date" name="reporting_date_term2" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="term3Date">Term 3 Reporting Date *</label>
-                                    <input type="date" id="term3Date" name="reporting_date_term3" required>
+                            <div class="intake-calendar-grid" id="intakeCalendarGrid"
+                                style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                                <!-- Months will be injected here by JS -->
+                                <div style="text-align: center; grid-column: 1/-1; padding: 2rem; color: #666;">
+                                    <i class="fas fa-spinner fa-spin"></i> Loading calendar...
                                 </div>
                             </div>
                         </div>

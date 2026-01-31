@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login - East Africa Vision Institute</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -15,7 +17,7 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #541954 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -38,7 +40,7 @@
             font-size: 2.5rem;
             font-weight: 600;
             margin-bottom: 1rem;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .login-header p {
@@ -49,7 +51,7 @@
         .login-card {
             background: white;
             border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             margin: 0 auto;
             max-width: 500px;
@@ -102,8 +104,8 @@
 
         .input-with-icon input:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #541954;
+            box-shadow: 0 0 0 3px rgba(84, 25, 84, 0.1);
         }
 
         .password-info {
@@ -118,7 +120,7 @@
         .btn-login {
             width: 100%;
             padding: 1rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #46871e 0%, #386c18 100%);
             color: white;
             border: none;
             border-radius: 8px;
@@ -134,7 +136,7 @@
 
         .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 10px 20px rgba(70, 135, 30, 0.3);
         }
 
         .btn-login:disabled {
@@ -160,26 +162,26 @@
             .login-header h2 {
                 font-size: 2rem;
             }
-            
+
             .login-card {
                 max-width: 95%;
                 margin: 0 1rem;
             }
-            
+
             .login-form-container {
                 padding: 2rem;
             }
-            
+
             .login-form-container h3 {
                 font-size: 1.5rem;
                 margin-bottom: 1.5rem;
             }
-            
+
             .input-with-icon input {
                 padding: 0.875rem 0.875rem 0.875rem 2.5rem;
                 font-size: 0.95rem;
             }
-            
+
             .btn-login {
                 padding: 0.875rem;
                 font-size: 1rem;
@@ -191,20 +193,20 @@
             .login-header h2 {
                 font-size: 1.75rem;
             }
-            
+
             .login-form-container {
                 padding: 1.5rem;
             }
-            
+
             .login-form-container h3 {
                 font-size: 1.3rem;
             }
-            
+
             .input-with-icon input {
                 padding: 0.75rem 0.75rem 0.75rem 2.25rem;
                 font-size: 0.9rem;
             }
-            
+
             .btn-login {
                 padding: 0.75rem;
                 font-size: 0.95rem;
@@ -212,6 +214,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="login-container">
         <div class="login-header">
@@ -222,7 +225,7 @@
         <div class="login-card">
             <div class="login-form-container">
                 <h3>Admin Login</h3>
-                
+
                 <form id="adminLoginForm">
                     <div class="form-group">
                         <label for="loginPassword">Password</label>
@@ -243,6 +246,12 @@
 
                     <div class="login-footer">
                         <p>Contact system administrator if you forget your password</p>
+                        <p style="margin-top: 1rem;">
+                            <a href="/"
+                                style="color: #541954; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 500;">
+                                <i class="fas fa-arrow-left"></i> Back to Website
+                            </a>
+                        </p>
                     </div>
                 </form>
             </div>
@@ -251,20 +260,20 @@
 
     <script>
         // Simplified login functionality
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const loginForm = document.getElementById('adminLoginForm');
-            
+
             if (loginForm) {
-                loginForm.addEventListener('submit', async function(e) {
+                loginForm.addEventListener('submit', async function (e) {
                     e.preventDefault();
-                    
+
                     const password = document.getElementById('loginPassword').value;
-                    
+
                     if (!password) {
                         alert('Please enter your password');
                         return;
                     }
-                    
+
                     // Determine campus based on password
                     let campus, email, username;
                     if (password === '0748022044W*') {
@@ -279,15 +288,15 @@
                         alert('Invalid password. Please check your campus password.');
                         return;
                     }
-                    
+
                     console.log('Attempting login for campus:', campus, 'username:', username);
-                    
+
                     try {
                         const submitBtn = loginForm.querySelector('.btn-login');
                         const originalText = submitBtn.innerHTML;
                         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
                         submitBtn.disabled = true;
-                        
+
                         // Simple API call like the debug page
                         const response = await fetch(`/api/${campus}/admin/login`, {
                             method: 'POST',
@@ -299,11 +308,11 @@
                                 password: password
                             })
                         });
-                        
+
                         console.log('Response status:', response.status);
                         const result = await response.json();
                         console.log('Response data:', result);
-                        
+
                         if (response.ok && result.success) {
                             // Store authentication data
                             localStorage.setItem('admin_token', result.token);
@@ -313,7 +322,7 @@
                                 campus: campus,
                                 token: result.token
                             }));
-                            
+
                             console.log('Login successful, redirecting to dashboard...');
                             window.location.href = '/admin/index.html';
                         } else {
@@ -333,4 +342,5 @@
         });
     </script>
 </body>
+
 </html>

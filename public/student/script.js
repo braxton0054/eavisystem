@@ -15,19 +15,36 @@ async function lookupAdmission() {
         return;
     }
 
+    // ... (previous code) ...
     try {
         const btn = document.querySelector('.btn-lookup');
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching...';
         btn.disabled = true;
 
-        const response = await fetch(`/api/${campus}/students/lookup/phone?phone=${encodeURIComponent(phone)}`);
+        let usedCampus = campus;
+        let response = await fetch(`/api/${campus}/students/lookup/phone?phone=${encodeURIComponent(phone)}`);
+
+        // If not found in selected campus, try the other one automatically
+        if (response.status === 404) {
+            const otherCampus = campus === 'west' ? 'twon' : 'west';
+            const otherResponse = await fetch(`/api/${otherCampus}/students/lookup/phone?phone=${encodeURIComponent(phone)}`);
+
+            if (otherResponse.ok) {
+                response = otherResponse;
+                usedCampus = otherCampus;
+                // Update the dropdown to match where we found them (optional but helpful)
+                document.getElementById('lookupCampus').value = otherCampus;
+            }
+        }
+
         const result = await response.json();
 
         resultDiv.style.display = 'block';
 
         if (response.ok && result.success) {
             const student = result.data;
-            const pdfUrl = `/api/${campus}/students/download/${student.admission_number}`;
+            // Use 'usedCampus' which might be different from the originally selected 'campus'
+            const pdfUrl = `/api/${usedCampus}/students/download/${encodeURIComponent(student.admission_number)}`;
             const feeUrl = student.fee_structure_pdf_name ? `/fee/${student.fee_structure_pdf_name}` : null;
 
             resultDiv.innerHTML = `
@@ -38,13 +55,8 @@ async function lookupAdmission() {
                     <p><strong>Course:</strong> ${student.course_name}</p>
                     <div class="download-buttons" style="margin-top: 1rem; justify-content: flex-start;">
                         <a href="${pdfUrl}" class="btn-download" target="_blank" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
-                            <i class="fas fa-file-pdf"></i> Admission Letter
+                            <i class="fas fa-file-pdf"></i> Admission Package
                         </a>
-                        ${feeUrl ? `
-                        <a href="${feeUrl}" class="btn-download btn-fee" target="_blank" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
-                            <i class="fas fa-file-invoice-dollar"></i> Fee Structure
-                        </a>
-                        ` : ''}
                     </div>
                 </div>
             `;
@@ -202,6 +214,18 @@ function prevStep() {
     document.querySelector(`[data-step="${currentStep}"]`).classList.add('active');
 }
 
+// Calculate age from DOB
+function calculateAge(dobString) {
+    const dob = new Date(dobString);
+    const today = new Date();
+    let age = today.getFullYear() - dob.getFullYear();
+    const m = today.getMonth() - dob.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+        age--;
+    }
+    return age;
+}
+
 // Validate current step
 function validateCurrentStep() {
     const currentStepElement = document.getElementById(`step${currentStep}`);
@@ -212,6 +236,19 @@ function validateCurrentStep() {
             alert(`Please fill in ${input.labels[0].textContent}`);
             input.focus();
             return false;
+        }
+    }
+
+    // Age validation for Step 1
+    if (currentStep === 1) {
+        const dobValue = document.getElementById('dob').value;
+        if (dobValue) {
+            const age = calculateAge(dobValue);
+            if (age < 16) {
+                alert('DETAILS ERROR CONTACT ADMISSION FOR MORE INFORMATION');
+                document.getElementById('dob').focus();
+                return false;
+            }
         }
     }
 
@@ -551,16 +588,16 @@ document.getElementById('admissionForm').addEventListener('submit', async functi
 
             // Set download links
             const admLink = document.getElementById('downloadLink');
-            const feeLink = document.getElementById('feeDownloadLink');
+            // const feeLink = document.getElementById('feeDownloadLink'); // Removed
 
-            admLink.href = `/api/${campus}/students/download/${result.data.admission_number}`;
+            admLink.href = `/api/${campus}/students/download/${encodeURIComponent(result.data.admission_number)}`;
 
-            if (result.data.fee_structure_pdf_name) {
-                feeLink.href = `/fee/${result.data.fee_structure_pdf_name}`;
-                feeLink.style.display = 'inline-block';
-            } else {
-                feeLink.style.display = 'none';
-            }
+            // if (result.data.fee_structure_pdf_name) { // Removed
+            //     feeLink.href = `/fee/${result.data.fee_structure_pdf_name}`; // Removed
+            //     feeLink.style.display = 'inline-block'; // Removed
+            // } else { // Removed
+            //     feeLink.style.display = 'none'; // Removed
+            // } // Removed
 
             document.getElementById('successModal').style.display = 'flex';
 
@@ -573,19 +610,16 @@ document.getElementById('admissionForm').addEventListener('submit', async functi
                     link.target = '_blank';
                     document.body.appendChild(link);
                     link.click();
-                    document.body.removeChild(link);
+                    setTimeout(() => document.body.removeChild(link), 100);
                 };
 
-                // Download admission letter
+                console.log('Starting automatic downloads...');
+
+                // Download admission package
                 triggerDownload(admLink.href, `Admission_${result.data.admission_number}.pdf`);
 
-                // Download fee structure if available
-                if (result.data.fee_structure_pdf_name) {
-                    setTimeout(() => {
-                        triggerDownload(feeLink.href, result.data.fee_structure_pdf_name);
-                    }, 1000);
-                }
-            }, 500);
+                // showNotification('Registration successful! Your admission package is downloading.', 'success'); // Assuming this function is defined elsewhere
+            }, 800);
 
             // Reset form
             form.reset();

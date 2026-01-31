@@ -146,9 +146,7 @@ function renderWhatsAppTable(students) {
             </td>
             <td>
                 <div class="action-buttons">
-                    <button class="btn-action view" onclick="viewStudent('${studentId}')" title="View">
-                        <i class="fas fa-eye"></i>
-                    </button>
+
                     <button class="btn-action whatsapp" onclick="shareSingleStudent('${studentId}')" title="Share">
                         <i class="fab fa-whatsapp"></i>
                     </button>
@@ -324,7 +322,7 @@ function shareSingleStudent(studentId) {
     }
 
     // Get PDF link from backend
-    const pdfLink = `${API_BASE_URL}/${currentCampus}/students/download/${studentId}`;
+    const pdfLink = `${API_BASE_URL}/${currentCampus}/students/download/${encodeURIComponent(studentId)}`;
 
     // Generate message with student info
     const message = generateMessageForStudent(student, pdfLink);
@@ -352,7 +350,7 @@ function generateShareLinks() {
     // Generate links for each student
     selectedStudentsMap.forEach((student, studentId) => {
         // Get PDF link from backend
-        const pdfLink = `${API_BASE_URL}/${currentCampus}/students/download/${studentId}`;
+        const pdfLink = `${API_BASE_URL}/${currentCampus}/students/download/${encodeURIComponent(studentId)}`;
 
         // Generate message with student info
         const message = generateMessageForStudent(student, pdfLink);
@@ -434,7 +432,7 @@ function copyAllLinks() {
     const links = [];
     selectedStudentsMap.forEach((student, studentId) => {
         // Get PDF link from backend
-        const pdfLink = `${API_BASE_URL}/${currentCampus}/students/download/${studentId}`;
+        const pdfLink = `${API_BASE_URL}/${currentCampus}/students/download/${encodeURIComponent(studentId)}`;
 
         // Generate message with student info
         const message = generateMessageForStudent(student, pdfLink);
@@ -457,7 +455,7 @@ function copyAllLinks() {
 function openAllLinks() {
     selectedStudentsMap.forEach((student, studentId) => {
         // Get PDF link from backend
-        const pdfLink = `${API_BASE_URL}/${currentCampus}/students/download/${studentId}`;
+        const pdfLink = `${API_BASE_URL}/${currentCampus}/students/download/${encodeURIComponent(studentId)}`;
 
         // Generate message with student info
         const message = generateMessageForStudent(student, pdfLink);

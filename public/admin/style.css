@@ -3,7 +3,7 @@
 /* Login Section - Higher specificity */
 section.login-section {
     min-height: 100vh !important;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    background: linear-gradient(135deg, #541954 0%, #764ba2 100%) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -46,7 +46,7 @@ div.login-card {
 }
 
 .login-icon {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #541954 0%, #764ba2 100%);
     padding: 3rem;
     display: flex;
     align-items: center;
@@ -107,7 +107,7 @@ div.login-card {
 
 .input-with-icon input:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: #541954;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
@@ -123,7 +123,7 @@ div.login-card {
 button.btn-login {
     width: 100% !important;
     padding: 1rem !important;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    background: linear-gradient(135deg, #46871e 0%, #386c18 100%) !important;
     color: white !important;
     border: none !important;
     border-radius: 8px !important;
@@ -137,9 +137,61 @@ button.btn-login {
     gap: 0.5rem !important;
 }
 
+.home-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: var(--primary-color);
+    color: white !important;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.home-link:hover {
+    background-color: #46871e;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(70, 135, 30, 0.2);
+}
+
+.top-bar {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    background: white !important;
+    padding: 1rem 2rem !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05) !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 100 !important;
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.website-link {
+    color: #666;
+    text-decoration: none;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: color 0.3s ease;
+}
+
+.website-link:hover {
+    color: var(--primary-color);
+}
+
 .btn-login:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 10px 20px rgba(70, 135, 30, 0.3);
 }
 
 .btn-login:disabled {
@@ -835,7 +887,7 @@ button.btn-login {
     background-color: #f8f9fa;
     border-radius: var(--border-radius);
     padding: 1.5rem;
-    border-top: 4px solid var(--secondary-color);
+    border-top: 4px solid #541954;
 }
 
 .term-header {
@@ -1518,6 +1570,17 @@ button.btn-login {
     text-align: center;
 }
 
+.btn-action.whatsapp {
+    background-color: #25D366;
+    color: white;
+}
+
+.btn-action.whatsapp:hover {
+    background-color: #128C7E;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(37, 211, 102, 0.3);
+}
+
 .btn-action.download {
     background-color: #3182ce;
     color: white;
@@ -1963,7 +2026,7 @@ select:focus {
     width: 16px;
     height: 16px;
     border: 2px solid #e0e0e0;
-    border-top: 2px solid var(--secondary-color);
+    border-top: 3px solid #541954;
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
@@ -2908,5 +2971,151 @@ select:focus {
 
     .info-cards {
         grid-template-columns: 1fr;
+    }
+}
+
+/* =========================================
+   Mobile Friendly Table & Group Views
+   ========================================= */
+
+/* View Switcher */
+.view-switcher {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    background: white;
+    padding: 0.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    overflow-x: auto;
+}
+
+.view-btn {
+    padding: 10px 20px;
+    border: none;
+    background: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-weight: 500;
+    color: #666;
+    white-space: nowrap;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.view-btn.active {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.view-btn:hover:not(.active) {
+    background-color: #f0f0f0;
+    color: var(--primary-color);
+}
+
+/* Group Grid (Folders) */
+.group-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.group-card {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: var(--transition);
+    border-left: 5px solid var(--secondary-color);
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.group-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.group-icon {
+    width: 60px;
+    height: 60px;
+    background-color: #f0f0f0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--secondary-color);
+}
+
+.group-info h4 {
+    margin: 0 0 0.5rem 0;
+    color: var(--primary-color);
+    font-size: 1.1rem;
+}
+
+.group-info p {
+    margin: 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+/* Mobile Table Card View */
+@media (max-width: 768px) {
+    .data-table thead {
+        display: none;
+    }
+
+    .data-table,
+    .data-table tbody,
+    .data-table tr,
+    .data-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .data-table {
+        background: transparent;
+    }
+
+    .data-table tr {
+        background: white;
+        margin-bottom: 1rem;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+    }
+
+    .data-table td {
+        text-align: right;
+        padding: 12px 15px;
+        position: relative;
+        padding-left: 50%;
+        border-bottom: 1px solid #eee;
+    }
+
+    .data-table td:last-child {
+        border-bottom: none;
+        padding-left: 15px;
+        text-align: center;
+        background: #f8f9fa;
+        display: flex;
+        justify-content: flex-end;
+        /* Align actions to right */
+    }
+
+    .data-table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 15px;
+        width: 45%;
+        text-align: left;
+        font-weight: 600;
+        color: #555;
     }
 }

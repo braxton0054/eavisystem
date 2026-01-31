@@ -306,22 +306,22 @@
 
 .btn-next,
 .btn-submit {
-    background-color: var(--secondary-color);
+    background-color: #46871e;
     color: white;
 }
 
 .btn-next:hover,
 .btn-submit:hover {
-    background-color: #2980b9;
+    background-color: #386c18;
     transform: translateY(-2px);
 }
 
 .btn-submit {
-    background-color: var(--success-color);
+    background-color: #46871e;
 }
 
 .btn-submit:hover {
-    background-color: #219653;
+    background-color: #386c18;
 }
 
 /* Modal */
@@ -391,7 +391,7 @@
 
 .btn-download {
     display: inline-block;
-    background-color: var(--success-color);
+    background-color: #46871e;
     color: white;
     padding: 12px 30px;
     border-radius: var(--border-radius);
@@ -401,7 +401,7 @@
 }
 
 .btn-download:hover {
-    background-color: #219653;
+    background-color: #386c18;
     transform: translateY(-2px);
 }
 
@@ -515,7 +515,7 @@
 
 .btn-lookup {
     padding: 0.8rem 2rem;
-    background: var(--secondary-color);
+    background: #46871e;
     color: white;
     border: none;
     border-radius: 8px;
@@ -546,11 +546,11 @@
 }
 
 .btn-fee {
-    background-color: #27ae60 !important;
+    background-color: #46871e !important;
 }
 
 .btn-fee:hover {
-    background-color: #219150 !important;
+    background-color: #386c18 !important;
 }
 
 @media (max-width: 768px) {
